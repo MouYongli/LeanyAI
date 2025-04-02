@@ -15,15 +15,15 @@ export default function About() {
   return (
     <CommonLayout>
       <div className="flex flex-col items-center justify-center py-12">
-        <h1 className="text-4xl font-bold text-center mb-6">
+        <h1 className="text-4xl font-bold text-center mb-6" suppressHydrationWarning>
           {t('about.title')}
         </h1>
-        <p className="text-lg text-gray-600 text-center max-w-2xl mb-12">
+        <p className="text-lg text-gray-600 text-center max-w-2xl mb-12" suppressHydrationWarning>
           {t('about.description')}
         </p>
         
         <div className="w-full max-w-4xl">
-          <h2 className="text-2xl font-semibold mb-6">
+          <h2 className="text-2xl font-semibold mb-6" suppressHydrationWarning>
             {t('about.features')}
           </h2>
           
@@ -33,13 +33,15 @@ export default function About() {
                 key={feature.id}
                 className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
               >
-                <h3 className="text-xl font-medium mb-2">{feature.title}</h3>
+                <h3 className="text-xl font-medium mb-2" suppressHydrationWarning>
+                  {feature.title}
+                </h3>
               </div>
             ))}
           </div>
           
           <div className="mt-12 text-center">
-            <p className="text-gray-600">
+            <p className="text-gray-600" suppressHydrationWarning>
               {t('about.moreInfo')}
             </p>
           </div>

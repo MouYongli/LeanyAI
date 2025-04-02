@@ -1,0 +1,1 @@
+[server.ts](server.ts) getLocaleOnServer获取 local 语言设置

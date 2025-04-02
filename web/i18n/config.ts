@@ -1,7 +1,8 @@
 const i18nConfig = {
-  locales: ['en', 'zh'],  // 支持的语言列表
-  defaultLocale: 'en',    // 默认语言
-  localeCookie: 'NEXT_LOCALE',
+  // 支持的语言列表
+  locales: ['en', 'zh', 'de'],
+  // 默认语言
+  defaultLocale: 'en'
 }
 
 export default i18nConfig

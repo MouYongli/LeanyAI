@@ -1,16 +1,50 @@
 import i18nConfig from './config'
+import type { Locale } from './language'
 
-export type Locale = (typeof i18nConfig.locales)[number]
+// 导入语言资源
+import enCommon from './en/common'
+import zhCommon from './zh/common'
+import deCommon from './de/common'
 
-// 简化版的服务器端i18n实现
-export const getLocaleOnServer = (): Locale => {
-  return i18nConfig.defaultLocale
+// 服务端翻译资源
+const resources = {
+  en: { common: enCommon },
+  zh: { common: zhCommon },
+  de: { common: deCommon }
 }
 
-// 简化版的翻译函数
-export function useTranslation(namespace?: string, options?: any) {
+// 获取服务器端的语言设置 - 始终返回默认语言
+export const getLocaleOnServer = async (): Promise<Locale> => {
+  console.log('[Server] Using default locale:', i18nConfig.defaultLocale);
+  return i18nConfig.defaultLocale as Locale;
+}
+
+// 服务器端简单翻译函数
+export function getTranslation(locale: Locale = i18nConfig.defaultLocale as Locale) {
+  const t = (key: string, params?: Record<string, any>) => {
+    const keys = key.split('.');
+    const namespace = keys.length > 1 ? keys[0] : 'common';
+    const actualKey = keys.length > 1 ? keys.slice(1).join('.') : keys[0];
+
+    try {
+      const translation = resources[locale]?.[namespace]?.[actualKey] 
+        || resources[i18nConfig.defaultLocale as Locale]?.[namespace]?.[actualKey] 
+        || key;
+      
+      if (params) {
+        return translation.replace(/\{(\w+)\}/g, (_, key) => 
+          params[key] !== undefined ? params[key] : `{${key}}`
+        );
+      }
+      
+      return translation;
+    } catch (error) {
+      return key;
+    }
+  };
+
   return {
-    t: (key: string) => key, // 简单返回键名作为翻译结果
-    i18n: { language: i18nConfig.defaultLocale }
-  }
+    t,
+    locale
+  };
 }

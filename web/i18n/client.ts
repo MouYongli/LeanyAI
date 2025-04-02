@@ -1,26 +1,23 @@
 import i18nConfig from './config'
+import type { Locale } from './language'
 
-export type Locale = (typeof i18nConfig.locales)[number]
-
+// 获取客户端的语言设置 - 始终返回默认语言
 export const getLocaleOnClient = (): Locale => {
-  // 尝试从 localStorage 获取语言设置
-  if (typeof window !== 'undefined') {
-    const savedLocale = localStorage.getItem('locale') as Locale | null
-    if (savedLocale && i18nConfig.locales.includes(savedLocale))
-      return savedLocale
-  }
-
-  return i18nConfig.defaultLocale
+  return i18nConfig.defaultLocale as Locale;
 }
 
-// 简化版的i18n客户端，不依赖next-i18n-router
-export const i18n = {
-  // 这里可以添加必要的方法
+// 空函数，不再在客户端保存语言偏好
+export const setLocaleOnClient = (_locale: Locale) => {
+  // 不做任何事情
 }
 
-export function setLocaleOnClient(locale: Locale) {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('locale', locale)
-    window.location.reload()
+// 客户端 i18n 基础配置
+export const i18nClient = {
+  t: (key: string, _options?: Record<string, any>) => {
+    // 这里将被 useI18n hook 中的真实翻译函数替代
+    return key;
+  },
+  changeLanguage: (locale: Locale) => {
+    return Promise.resolve();
   }
 }
