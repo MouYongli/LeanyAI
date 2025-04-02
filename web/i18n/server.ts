@@ -6,8 +6,19 @@ import enCommon from './en/common'
 import zhCommon from './zh/common'
 import deCommon from './de/common'
 
+// 定义资源的接口类型
+interface TranslationResource {
+  [key: string]: string | TranslationResource;
+}
+
+interface Resources {
+  [locale: string]: {
+    [namespace: string]: TranslationResource;
+  };
+}
+
 // 服务端翻译资源
-const resources = {
+const resources: Resources = {
   en: { common: enCommon },
   zh: { common: zhCommon },
   de: { common: deCommon }
@@ -27,13 +38,13 @@ export function getTranslation(locale: Locale = i18nConfig.defaultLocale as Loca
     const actualKey = keys.length > 1 ? keys.slice(1).join('.') : keys[0];
 
     try {
-      const translation = resources[locale]?.[namespace]?.[actualKey] 
-        || resources[i18nConfig.defaultLocale as Locale]?.[namespace]?.[actualKey] 
+      const translation = resources[locale]?.[namespace]?.[actualKey] as string
+        || resources[i18nConfig.defaultLocale as Locale]?.[namespace]?.[actualKey] as string
         || key;
       
       if (params) {
-        return translation.replace(/\{(\w+)\}/g, (_, key) => 
-          params[key] !== undefined ? params[key] : `{${key}}`
+        return translation.replace(/\{(\w+)\}/g, (_: string, paramKey: string) => 
+          params[paramKey] !== undefined ? params[paramKey] : `{${paramKey}}`
         );
       }
       

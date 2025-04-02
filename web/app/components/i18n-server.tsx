@@ -1,4 +1,3 @@
-import { getLocaleOnServer } from '@/i18n/server'
 import { I18NClient } from './i18n-client'
 import { ReactNode } from 'react'
 import type { Locale } from '@/i18n/language'

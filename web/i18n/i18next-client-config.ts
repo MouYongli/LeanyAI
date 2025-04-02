@@ -33,8 +33,8 @@ i18nextClient.use(initReactI18next).init({
   },
   defaultNS: 'common',
   react: {
-    useSuspense: false,
-    wait: true
+    useSuspense: false
+    // wait 属性已从最新版本的 react-i18next 中移除
   }
 });
 
