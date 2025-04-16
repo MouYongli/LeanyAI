@@ -1,4 +1,10 @@
 # LeanyAI
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Supported-blue)](https://hub.docker.com/r/YOUR_DOCKER_IMAGE)
+[![React](https://img.shields.io/badge/React-18.x-61dafb?logo=react)](https://react.dev/)
+[![Next.js](https://img.shields.io/badge/Next.js-14.x-black?logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![GitHub Action](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml/badge.svg)](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml)
 
 LeanyAI 是一个基于 Next.js 的多语言 AI 平台，支持前后端分离部署。
 
