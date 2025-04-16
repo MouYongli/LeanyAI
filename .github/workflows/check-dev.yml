@@ -33,6 +33,17 @@ jobs:
         which pnpm
         pnpm --version
 
+    - name: Ensure pnpm is installed and in PATH
+      run: |
+        if ! command -v pnpm > /dev/null; then
+          npm install -g pnpm@9
+          echo "pnpm installed via npm"
+        else
+          echo "pnpm already installed: $(pnpm --version)"
+        fi
+        echo "pnpm location: $(which pnpm)"
+        echo "PATH: $PATH"
+
     - name: Install dependencies
       working-directory: ./web
       run: pnpm install --frozen-lockfile
