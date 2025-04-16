@@ -4,7 +4,11 @@
 [![React](https://img.shields.io/badge/React-18.x-61dafb?logo=react)](https://react.dev/)
 [![Next.js](https://img.shields.io/badge/Next.js-14.x-black?logo=next.js)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript)](https://www.typescriptlang.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-9.x-F69220?logo=pnpm)](https://pnpm.io/)
+[![Nginx](https://img.shields.io/badge/Nginx-1.25+-009639?logo=nginx)](https://nginx.org/)
 [![GitHub Action](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml/badge.svg)](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml)
+
 
 LeanyAI 是一个基于 Next.js 的多语言 AI 平台，支持前后端分离部署。
 
