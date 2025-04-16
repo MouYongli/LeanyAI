@@ -19,22 +19,33 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'yarn'
-        cache-dependency-path: web/yarn.lock
+        cache: 'pnpm'
+        cache-dependency-path: web/pnpm-lock.yaml
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: '9'
+
+    - name: Echo PATH and pnpm version
+      run: |
+        echo $PATH
+        which pnpm
+        pnpm --version
 
     - name: Install dependencies
       working-directory: ./web
-      run: yarn install --frozen-lockfile
+      run: pnpm install --frozen-lockfile
       
     - name: Check lint
       working-directory: ./web
-      run: yarn lint
+      run: pnpm lint
       
     - name: Test development mode
       working-directory: ./web
       run: |
         # 验证开发命令可以启动
-        timeout 30s yarn dev || code=$?
+        timeout 30s pnpm dev || code=$?
         if [ $code -ne 124 ] && [ $code -ne 0 ]; then
           echo "Development mode failed to start"
           exit $code
@@ -42,4 +53,4 @@ jobs:
         
     - name: Check build
       working-directory: ./web
-      run: yarn build
+      run: pnpm build
