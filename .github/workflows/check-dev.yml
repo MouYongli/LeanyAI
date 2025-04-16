@@ -15,34 +15,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    
+    - uses: pnpm/action-setup@v4
+      name: Install pnpm
       with:
-        node-version: '20'
-        cache: 'pnpm'
+        version: 10
+        run_install: false
         cache-dependency-path: web/pnpm-lock.yaml
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v3
+    - name: Install Node.js
+      uses: actions/setup-node@v4
       with:
-        version: '9'
+        node-version: 20
+        cache: 'pnpm'
+        cache-dependency-path: web/pnpm-lock.yaml
 
     - name: Echo PATH and pnpm version
       run: |
         echo $PATH
         which pnpm
         pnpm --version
-
-    - name: Ensure pnpm is installed and in PATH
-      run: |
-        if ! command -v pnpm > /dev/null; then
-          npm install -g pnpm@9
-          echo "pnpm installed via npm"
-        else
-          echo "pnpm already installed: $(pnpm --version)"
-        fi
-        echo "pnpm location: $(which pnpm)"
-        echo "PATH: $PATH"
 
     - name: Install dependencies
       working-directory: ./web
