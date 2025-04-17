@@ -1,4 +1,4 @@
-name: Development and Build Check
+name: GitHub Actions Build
 
 on:
   push:

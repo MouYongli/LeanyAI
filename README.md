@@ -1,14 +1,16 @@
 # LeanyAI
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Supported-blue)](https://hub.docker.com/r/YOUR_DOCKER_IMAGE)
+[![GitHub Action](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml/badge.svg)](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml)
+
+
 [![React](https://img.shields.io/badge/React-18.x-61dafb?logo=react)](https://react.dev/)
 [![Next.js](https://img.shields.io/badge/Next.js-14.x-black?logo=next.js)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-9.x-F69220?logo=pnpm)](https://pnpm.io/)
 [![Nginx](https://img.shields.io/badge/Nginx-1.25+-009639?logo=nginx)](https://nginx.org/)
-[![GitHub Action](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml/badge.svg)](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml)
-
+[![i18n](https://img.shields.io/badge/i18n-multilingual-blueviolet?logo=googletranslate)](https://www.i18next.com/)
 
 LeanyAI 是一个基于 Next.js 的多语言 AI 平台，支持前后端分离部署。
 

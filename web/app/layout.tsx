@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { I18NServer } from "./components/i18n-server";
 import { getLocaleOnServer } from "@/i18n/server";
 import type { Locale } from "@/i18n/language";
 import i18nConfig from "@/i18n/config";
+import "./globals.css";
+import Header from "./components/header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +40,15 @@ export default async function RootLayout({
     <html lang={serverLocale} className="h-full" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}>
         <I18NServer locale={serverLocale}>
-          {children}
+          <div className="flex flex-col min-h-screen bg-white text-gray-900">
+            <Header />
+            <main className="flex-1 p-6">
+              {children}
+            </main>
+            <footer className="bg-gray-50 py-6 px-6 text-center text-gray-500 text-sm">
+              &copy; {new Date().getFullYear()} LeanyAI. All rights reserved.
+            </footer>
+          </div>
         </I18NServer>
       </body>
     </html>
