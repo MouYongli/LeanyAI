@@ -33,6 +33,8 @@ LeanyAI 前端是一个基于 [Next.js](https://nextjs.org/) 的多语言 SSR �
 
 ## 启动开发环境
 ```bash
+npm install -g pnpm
+
 pnpm install
 pnpm run dev
 ```
@@ -60,3 +62,7 @@ pnpm start
 - 新增页面/组件：按 Next.js 约定放入 app/ 或 components/
 
 更多细节见根目录 README 及源码注释。
+
+
+
+

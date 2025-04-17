@@ -26,6 +26,16 @@ export default function Header() {
             <span suppressHydrationWarning>{t('home')}</span>
           </Link>
           <Link 
+            href="/workflow" 
+            className={`text-sm font-medium ${
+              pathname === '/workflow' 
+              ? 'text-blue-600' 
+              : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <span suppressHydrationWarning>{t('workflow')}</span>
+          </Link>
+          <Link 
             href="/about" 
             className={`text-sm font-medium ${
               pathname === '/about' 
@@ -35,6 +45,7 @@ export default function Header() {
           >
             <span suppressHydrationWarning>{t('about')}</span>
           </Link>
+
         </div>
       </div>
       
