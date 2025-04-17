@@ -1,3 +1,5 @@
+![docs/images/image.png](https://raw.githubusercontent.com/MouYongli/LeanyAI/main/images/image.png)
+
 # LeanyAI
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Supported-blue)](https://hub.docker.com/r/YOUR_DOCKER_IMAGE)
@@ -15,12 +17,21 @@
 LeanyAI 是一个基于 Next.js 的多语言 AI 平台，支持前后端分离部署。
 
 ## 目录结构
-- web/    —— 前端 Next.js 应用，支持多语言和 SSR
-- api/    —— 后端服务（预留，未来可扩展）
-- docker/ —— Docker Compose 与 Nginx 统一编排部署
-- images/ —— 项目截图与图片资源
-- mindstrom/ —— 设计与架构文档
-- difyCode.xml —— 由 Repomix 生成的 AI 友好代码包
+```
+web/           前端 Next.js 应用，支持多语言、SSR、i18n，详见 web/README.md
+api/           后端服务（预留，未来可扩展）
+docker/        Docker Compose 与 Nginx 统一编排部署，详见 docker/README.md
+docs/          说明文档、项目截图与架构文档
+├── images/        项目截图与图片资源
+├── mindstrom/     设计与架构文档
+│   ├── 0416.md
+│   ├── fastapi.png
+│   ├── image.png
+│   ├── mindstrom.md
+│   └── structure.jpg
+└── ...
+difyCode.xml   由 Repomix 生成的 AI 友好代码包
+```
 
 ## 一键启动
 1. 进入 docker 目录
@@ -33,8 +44,4 @@ LeanyAI 是一个基于 Next.js 的多语言 AI 平台，支持前后端分离�
 ## 工具介绍
 - difyCode.xml 由 Repomix 生成，可用于 AI 代码理解与分析。
 - Repomix 可将整个代码仓库打包成单个 AI 友好的文件，便于大模型理解。
-
-## 相关目录说明
-- web/README.md 详述前端开发、i18n、技术栈等
-- docker/README.md 详述部署、编排、Nginx 配置等
 
