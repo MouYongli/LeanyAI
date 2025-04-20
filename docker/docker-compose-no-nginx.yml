@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ../web
+      dockerfile: Dockerfile
+    container_name: nextjs-web
+    restart: unless-stopped
+    ports:
+      - "8300:3003"

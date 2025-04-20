@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ../web
+      dockerfile: Dockerfile
+    container_name: nextjs-web
+    restart: unless-stopped
+    expose:
+      - 3003
+
+  existing-nginx:
+    image: nginx:alpine
+    container_name: existing-nginx-proxy
+    ports:
+      - "8300:80"
+    volumes:
+      - /path/to/existing/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
+    restart: unless-stopped

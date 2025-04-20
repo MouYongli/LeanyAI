@@ -45,3 +45,18 @@ difyCode.xml   由 Repomix 生成的 AI 友好代码包
 - difyCode.xml 由 Repomix 生成，可用于 AI 代码理解与分析。
 - Repomix 可将整个代码仓库打包成单个 AI 友好的文件，便于大模型理解。
 
+## 部署方式
+
+本项目支持三种不同的部署方式：
+
+1. **Nginx 直接部署**：
+   - 使用 `docker-compose-nginx-direct.yml` 文件，通过 Nginx 作为反向代理部署项目。
+   - 命令：`docker-compose -f docker/docker-compose-nginx-direct.yml up --build`
+
+2. **挂载已经存在的 Nginx**：
+   - 使用 `docker-compose-existing-nginx.yml` 文件，通过挂载已经存在的 Nginx 实例部署项目。
+   - 命令：`docker-compose -f docker/docker-compose-existing-nginx.yml up --build`
+
+3. **不用 Nginx**：
+   - 使用 `docker-compose-no-nginx.yml` 文件，直接暴露 web 服务，不使用 Nginx 作为反向代理。
+   - 命令：`docker-compose -f docker/docker-compose-no-nginx.yml up --build`
