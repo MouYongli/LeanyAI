@@ -45,7 +45,17 @@ export default function Header() {
           >
             <span suppressHydrationWarning>{t('about')}</span>
           </Link>
-
+          {/* 新增 Studio 标签 */}
+          <Link
+            href="/studio"
+            className={`text-sm font-medium ${
+              pathname === '/studio'
+              ? 'text-blue-600'
+              : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <span suppressHydrationWarning>{t('studio')}</span>
+          </Link>
         </div>
       </div>
       
