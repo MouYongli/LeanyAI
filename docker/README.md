@@ -5,9 +5,11 @@
 ## 整体流程
 - docker-compose 统一编排和启动所有服务（如 web、api、nginx）。
 - nginx 作为独立容器服务，由 compose 管理。
-- nginx 通过配置挂载，将前端 web 服务（3003 端口）和后端 api 服务（目前未设置，比如 5001 端口）代理到外部，统一对外提供接口和页面访问。
+- nginx 通过配置挂载,代理到外部，统一对外提供接口和页面访问。
+   - 将前端 web 服务（3003 端口）
+   - 后端 api 服务（目前未设置，比如 5001 端口）
 - 用户访问 nginx，nginx 决定请求转发到 web 还是 api 服务，实现前后端分离和安全隔离。
-- 总结：compose 管理所有服务，nginx 作为流量入口，代理 web 和 api 服务。
+- 总结：compose 管理所有服务，nginx 作为**流量入口**，代理 web 和 api 服务。
 
 ## 主要文件说明
 - docker-compose.yml：定义 web（Next.js）、api（后端）、nginx 三个服务。nginx 通过 depends_on 保证 web、api 启动后再启动。

@@ -24,3 +24,6 @@ This project supports three different deployment methods using Docker Compose:
 3. **Without Nginx**:
    - Use the `docker-compose-no-nginx.yml` file to deploy the project without Nginx.
    - Command: `docker-compose -f docker/docker-compose-no-nginx.yml up --build`
+
+# yaml vs json
+![alt text](image-1.png)

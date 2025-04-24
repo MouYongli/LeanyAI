@@ -18,7 +18,7 @@ RUN pnpm build
 # production stage
 FROM base AS production
 ENV NODE_ENV=production
-ENV PORT=3003
+ENV PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app
 COPY --from=builder /app/public ./public
