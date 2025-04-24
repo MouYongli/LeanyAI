@@ -5,6 +5,7 @@ export default {
   logout: 'Log out',
   home: 'Home',
   about: 'About',
+  studio: 'Studio',
   language: 'Language',
   profile: 'Profile',
   darkMode: 'Dark Mode',

@@ -21,5 +21,6 @@ export default {
   'about.feature1': '高级自然语言处理',
   'about.feature2': '多语言支持',
   'about.feature3': '可定制的人工智能解决方案',
-  'about.moreInfo': '联系我们，了解 LeanyAI 如何帮助您的业务。'
+  'about.moreInfo': '联系我们，了解 LeanyAI 如何帮助您的业务。',
+  studio: '工作室',
 }
