@@ -1,4 +1,5 @@
-![docs/images/image.png](https://raw.githubusercontent.com/MouYongli/LeanyAI/main/images/image.png)
+![Mainpage](docs/images/image.png)
+![Mainpage](docs/images/workflow.png)
 
 # LeanyAI
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
