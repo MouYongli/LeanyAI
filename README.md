@@ -4,7 +4,6 @@
 # LeanyAI
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Supported-blue)](https://hub.docker.com/r/YOUR_DOCKER_IMAGE)
-[![GitHub Action](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml/badge.svg)](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml)
 
 
 [![React](https://img.shields.io/badge/React-18.x-61dafb?logo=react)](https://react.dev/)
@@ -15,34 +14,63 @@
 [![Nginx](https://img.shields.io/badge/Nginx-1.25+-009639?logo=nginx)](https://nginx.org/)
 [![i18n](https://img.shields.io/badge/i18n-multilingual-blueviolet?logo=googletranslate)](https://www.i18next.com/)
 
-LeanyAI 是一个基于 Next.js 的多语言 AI 平台，支持前后端分离部署。
+[![GitHub Action](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml/badge.svg)](https://github.com/MouYongli/LeanyAI/actions/workflows/check-dev.yml)
 
-## 目录结构
-```
-web/           前端 Next.js 应用，支持多语言、SSR、i18n，详见 web/README.md
-api/           后端服务（预留，未来可扩展）
-docker/        Docker Compose 与 Nginx 统一编排部署，详见 docker/README.md
-docs/          说明文档、项目截图与架构文档
-├── images/        项目截图与图片资源
-├── mindstrom/     设计与架构文档
-│   ├── 0416.md
-│   ├── fastapi.png
-│   ├── image.png
-│   ├── mindstrom.md
-│   └── structure.jpg
-└── ...
-difyCode.xml   由 Repomix 生成的 AI 友好代码包
+
+## 项目概述 / Project Overview
+LeanyAI 是一个基于 Next.js 和 FastAPI 的多语言 AI 平台，支持前后端分离部署，提供可扩展的工作流管理和 i18n 国际化功能。
+
+## 目录 / Table of Contents
+- [项目概述 / Project Overview](#项目概述--project-overview)
+- [功能特性 / Features](#功能特性--features)
+- [目录结构 / Directory Structure](#目录结构--directory-structure)
+- [安装与启动 / Getting Started](#安装与启动--getting-started)
+- [工具介绍 / Tooling](#工具介绍--tooling)
+
+
+## 功能特性 / Features
+- 多语言支持 (i18next、SSR)
+- 前后端分离架构 (Next.js, FastAPI)
+- 可定制工作流管理界面
+- Docker & Nginx 一键部署
+
+## 先决条件 / Prerequisites
+- Node.js >= 18
+- pnpm >= 7
+- Docker & Docker Compose
+
+## 目录结构 / Directory Structure
+```text
+top-level /
+├── web/           # 前端 Next.js 应用，详见 web/README.md
+├── api/           # 后端服务 (FastAPI)
+├── docker/        # Compose + Nginx 部署配置
+└── docs/          # 文档与设计资源
 ```
 
-## 一键启动
-1. 进入 docker 目录
+## 安装与启动 / Getting Started
+1. 进入项目根目录并安装依赖：
    ```bash
-   cd docker
-   docker-compose -p leanyai up --build
+   cd web && pnpm install
    ```
-2. 访问 http://localhost:8300 通过 Nginx 统一入口访问前端/后端
+2. 启动开发模式：
+   ```bash
+   pnpm dev
+   ```
+3. 或使用 Docker 一键部署：
+     ```bash
+     cd docker
+     docker-compose -f docker-compose.yml up -d --build
+     ```
 
-## 工具介绍
-- difyCode.xml 由 Repomix 生成，可用于 AI 代码理解与分析。
-- Repomix 可将整个代码仓库打包成单个 AI 友好的文件，便于大模型理解。
+     访问 http://leanyai.warhol.informatik.rwth-aachen.de (http://localhost:8300)  
+     通过 warhol 的 Nginx 统一入口访问前端/后端
+
+## 工具介绍 / Tooling
+- Repomix
+   - difyCode.xml 由 Repomix 生成，可用于 AI 代码理解与分析。
+   - Repomix 可将整个代码仓库打包成单个 AI 友好的文件，便于大模型理解。
+   ```
+   difyCode.xml   由 Repomix 生成的 AI 友好代码包
+   ```
 
