@@ -24,18 +24,22 @@ jobs:
     - name: Install uv
       run: pip install uv
 
+    - name: Create uv virtual environment
+      working-directory: ./api
+      run: uv venv
+
     - name: Install backend dependencies (uv)
       working-directory: ./api
       run: uv pip install -r requirements.txt
 
     # (Optional) Start MinIO for integration tests
     - name: Start MinIO
-      uses: appleboy/docker-action@v0.1.0
-      with:
-        image: minio/minio
-        options: -p 9000:9000 -p 9001:9001
-        command: server /data --console-address ":9001"
-        detach: true
+      run: |
+        docker run -d -p 9000:9000 -p 9001:9001 \
+          -e MINIO_ROOT_USER=minioadmin \
+          -e MINIO_ROOT_PASSWORD=minioadmin \
+          --name minio \
+          minio/minio server /data --console-address ":9001"
 
     - name: Wait for MinIO to be ready
       run: |
@@ -46,7 +50,8 @@ jobs:
 
     - name: Run backend tests
       working-directory: ./api
-      run: python test_minio_api.py
+      run: uv run python test_minio_api.py
+
 
     # Frontend steps
     - uses: pnpm/action-setup@v4
@@ -54,7 +59,6 @@ jobs:
       with:
         version: 10
         run_install: false
-        cache-dependency-path: web/pnpm-lock.yaml
 
     - name: Install Node.js
       uses: actions/setup-node@v4
