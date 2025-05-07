@@ -20,14 +20,26 @@ def ensure_bucket():
 
 def upload_file(file_obj, filename, content_type="application/octet-stream"):
     ensure_bucket()
+    file_obj.seek(0, os.SEEK_END)  # Move to the end of the file
+    file_size = file_obj.tell()    # Get the current position (file size)
+    file_obj.seek(0)              # Reset to the beginning of the file
     client.put_object(
         MINIO_BUCKET,
         filename,
         file_obj,
-        length=-1,
+        length=file_size,
         part_size=10*1024*1024,
         content_type=content_type
     )
 
 def get_file(filename):
     return client.get_object(MINIO_BUCKET, filename)
+
+def list_files():
+    ensure_bucket()
+    return [obj.object_name for obj in client.list_objects(MINIO_BUCKET)]
+
+# 删除文件
+def delete_file(filename):
+    ensure_bucket()
+    client.remove_object(MINIO_BUCKET, filename)

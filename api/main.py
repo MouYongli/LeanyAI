@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from minio.error import S3Error
 from minio_client import upload_file, get_file
+from minio_client import list_files, delete_file
 
 app = FastAPI()
 
@@ -13,6 +14,16 @@ async def upload(file: UploadFile = File(...)):
     except S3Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# 删除文件接口
+@app.delete("/delete/{filename}")
+def delete(filename: str):
+    try:
+        delete_file(filename)
+        return {"msg": "删除成功", "filename": filename}
+    except S3Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/download/{filename}")
 def download(filename: str):
     try:
@@ -20,3 +31,13 @@ def download(filename: str):
         return StreamingResponse(file_obj, media_type="application/octet-stream")
     except S3Error:
         raise HTTPException(status_code=404, detail="文件不存在")
+
+
+# 新增：列出所有文件
+@app.get("/files/")
+def show_files():
+    try:
+        files = list_files()
+        return {"files": files}
+    except S3Error as e:
+        raise HTTPException(status_code=500, detail=str(e))

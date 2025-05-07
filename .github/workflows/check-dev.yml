@@ -2,9 +2,9 @@ name: GitHub Actions Build
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
   workflow_dispatch:  # 允许手动触发工作流
 
 jobs:
@@ -14,8 +14,41 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    
+
+    # Backend: Set up Python 3.10 and install dependencies with uv
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install uv
+      run: pip install uv
+
+    - name: Install backend dependencies (uv)
+      working-directory: ./api
+      run: uv pip install -r requirements.txt
+
+    # (Optional) Start MinIO for integration tests
+    - name: Start MinIO
+      uses: appleboy/docker-action@v0.1.0
+      with:
+        image: minio/minio
+        options: -p 9000:9000 -p 9001:9001
+        command: server /data --console-address ":9001"
+        detach: true
+
+    - name: Wait for MinIO to be ready
+      run: |
+        for i in {1..10}; do
+          nc -z localhost 9000 && break
+          sleep 2
+        done
+
+    - name: Run backend tests
+      working-directory: ./api
+      run: python test_minio_api.py
+
+    # Frontend steps
     - uses: pnpm/action-setup@v4
       name: Install pnpm
       with:
@@ -39,11 +72,11 @@ jobs:
     - name: Install dependencies
       working-directory: ./web
       run: pnpm install --frozen-lockfile
-      
+
     - name: Check lint
       working-directory: ./web
       run: pnpm lint
-      
+
     - name: Test development mode
       working-directory: ./web
       run: |
@@ -53,7 +86,7 @@ jobs:
           echo "Development mode failed to start"
           exit $code
         fi
-        
+
     - name: Check build
       working-directory: ./web
       run: pnpm build

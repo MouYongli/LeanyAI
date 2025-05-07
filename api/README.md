@@ -11,7 +11,7 @@ api/
 ├── minio_client.py          # MinIO 客户端封装，负责与 MinIO 服务交互
 ├── .gitignore               # 忽略虚拟环境、缓存等
 ├── .venv/                   # Python 虚拟环境目录（已忽略）
-├── 进度总结.md              # 开发进度与计划
+├── 进度总结.md               # 开发进度与计划
 └── ...                      # 其他模块（如 models/、routes/、utils/ 等）
 ```
 
@@ -30,17 +30,22 @@ api/
    ```
 3. 安装依赖
    ```bash
-   pip install -r requirements.txt
+   uv pip install -r requirements.txt
    ```
 
 4. 下载并启动 MinIO（如本地未安装）
    - 访问 https://min.io/download#/linux 下载 MinIO Server
-   - 或使用如下命令下载安装并启动（Linux 示例）：
+   -  在 home 目录，用如下命令下载安装（Linux 示例）：
      ```bash
      wget https://dl.min.io/server/minio/release/linux-amd64/minio
      chmod +x minio
-     ./minio server ./data --console-address ":9001"
      ```
+   - 在 home 目录启动
+     ```bash
+      ./minio server ./data --console-address ":9001"
+     ```
+
+
    - 默认管理后台 http://localhost:9001，API 端口 http://localhost:9000
    - 默认账号/密码：minioadmin / minioadmin
 
