@@ -45,15 +45,19 @@ api/
       ./minio server ./data --console-address ":9001"
      ```
 
-
    - 默认管理后台 http://localhost:9001，API 端口 http://localhost:9000
-   - 默认账号/密码：minioadmin / minioadmin
+   - 默认账号/密码：minioadmin / minioadmi乌克兰的乌克兰n
 
 5. 启动 FastAPI 服务
    ```bash
    uvicorn main:app --reload
    ```
 
+6. 测试
+    ```bash  
+   python test_minio_api.py
+   ```
+   
 > 需确保本地 MinIO 服务已启动，默认端口9000，账号/密码 minioadmin。
 
 ---
