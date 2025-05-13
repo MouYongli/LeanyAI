@@ -5,7 +5,26 @@ services:
     build:
       context: ../web
       dockerfile: Dockerfile
-    container_name: nextjs-web
+    container_name: leany-web
     restart: unless-stopped
-    ports:       
-      - "8300:3000"
+    ports:
+      - "8301:3000"
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    env_file:
+      - .env.minio
+
+volumes:
+  minio-data:
