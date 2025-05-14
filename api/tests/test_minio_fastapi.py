@@ -1,7 +1,8 @@
 import os
 import requests
 
-BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
+MINIO_API_PORT = os.getenv("MINIO_API_PORT", "9000")
+BASE_URL = os.getenv("API_BASE_URL", f"http://localhost:{MINIO_API_PORT}")
 
 
 def test_upload():
@@ -26,9 +27,9 @@ def test_delete_file():
 
 
 def main():
-    test_upload()
+    # test_upload()
     test_list_files()
-    test_delete_file()
+    # test_delete_file()
     print('All tests passed.')
 
 

@@ -35,21 +35,6 @@ docker/
 
 ## 部署与启动 / Deployment & Startup
 
-### 有 Nginx / With Nginx
-1. 进入目录：
-   ```bash
-   cd docker
-   ```
-2. 启动并构建：
-   ```bash
-   docker compose -f docker-compose-nginx.yml up -d --build
-   ```
-   - `-d`：后台运行容器（detached mode）
-   - `--build`：启动前强制重新构建
-   
-3. 访问 nginx 服务端口 (默认 http://localhost:8300)，通过 nginx 转发。
-
-### 无 Nginx / Without Nginx
 1. 进入目录：
    ```bash
    cd docker

@@ -1,8 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from minio.error import S3Error
-from minio_client import upload_file, get_file
-from minio_client import list_files, delete_file
+from minio_service.minio_client import upload_file, get_file, list_files, delete_file
 
 app = FastAPI()
 
@@ -32,8 +31,6 @@ def download(filename: str):
     except S3Error:
         raise HTTPException(status_code=404, detail="文件不存在")
 
-
-# 新增：列出所有文件
 @app.get("/files/")
 def show_files():
     try:

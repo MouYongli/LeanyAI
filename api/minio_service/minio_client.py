@@ -39,7 +39,6 @@ def list_files():
     ensure_bucket()
     return [obj.object_name for obj in client.list_objects(MINIO_BUCKET)]
 
-# 删除文件
 def delete_file(filename):
     ensure_bucket()
     client.remove_object(MINIO_BUCKET, filename)

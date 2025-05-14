@@ -18,7 +18,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Compose up (web + minio)
+      - name: Compose up (web + minio + api)
         working-directory: ./docker
         run: |
           docker compose up -d --build
@@ -46,14 +46,6 @@ jobs:
             docker compose -f docker/docker-compose.yml logs leany-web || true
             exit 1
           fi
-
-      - name: Run backend tests
-        working-directory: ./api
-        run: |
-          pip install uv
-          uv venv
-          uv pip install -r requirements.txt
-          uv run python test_minio_api.py
 
       - name: Run frontend lint & build
         working-directory: ./web

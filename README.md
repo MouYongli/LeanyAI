@@ -43,7 +43,9 @@ LeanyAI 是一个基于 Next.js 和 FastAPI 的多语言 AI 平台，支持前�
 ```text
 top-level /
 ├── web/           # 前端 Next.js 应用，详见 web/README.md
-├── api/           # 后端服务 (FastAPI)
+├── api/           # 后端服务 (FastAPI, 包含 fastapi 和 minio 相关代码)
+│   ├── main.py   # FastAPI 相关代码
+│   └── Dockerfile.minio     # MinIO 集成与相关代码
 ├── docker/        # Compose + Nginx 部署配置
 └── docs/          # 文档与设计资源
 ```
