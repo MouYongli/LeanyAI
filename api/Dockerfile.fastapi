@@ -10,6 +10,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制 FastAPI 项目代码
 COPY fastapi_app/ .
+# 复制 MinIO 客户端服务代码
+COPY minio_service/ ./minio_service
 
 # 暴露端口
 EXPOSE 8000

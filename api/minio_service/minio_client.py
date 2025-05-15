@@ -42,3 +42,16 @@ def list_files():
 def delete_file(filename):
     ensure_bucket()
     client.remove_object(MINIO_BUCKET, filename)
+
+if __name__ == "__main__":
+
+    # 测试 list_files 功能
+    try:
+        files = list_files()
+        print("Files in bucket:")
+        for f in files:
+            print(f)
+    except Exception as e:
+        print(f"Error listing files: {e}")
+
+
