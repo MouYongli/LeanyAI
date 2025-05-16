@@ -54,4 +54,12 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error listing files: {e}")
 
+    # 测试 upload_file 功能
+    try:
+        with open("testfile.txt", "rb") as file_obj:
+            upload_file(file_obj, "testfile.txt", "text/plain")
+            print("File uploaded successfully.")
+    except Exception as e:
+        print(f"Error uploading file: {e}")
+    
 

@@ -65,7 +65,7 @@ top-level /
      docker-compose -f docker-compose.yml up -d --build
      ```
 
-     访问 http://leanyai.warhol.informatik.rwth-aachen.de (http://localhost:8300)  
+     访问 http://leany.warhol.informatik.rwth-aachen.de (http://localhost:8301)  
      通过 warhol 的 Nginx 统一入口访问前端/后端
 
 ## 工具介绍 / Tooling

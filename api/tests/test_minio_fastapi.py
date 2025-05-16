@@ -17,12 +17,9 @@ def test_upload():
 
 
 def test_list_files():
-    # upload test file before listing
-    files = {'file': (TEST_FILENAME, TEST_CONTENT, 'text/plain')}
-    up = requests.post(f"{BASE_URL}/upload/", files=files)
-    assert up.status_code == 200, up.text
     # list files
     resp = requests.get(f"{BASE_URL}/files/")
+
     assert resp.status_code == 200, resp.text
     files_list = resp.json().get('files', [])
     print('Files:', files_list)
