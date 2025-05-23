@@ -1,0 +1,15 @@
+# 使用官方 MinIO 镜像
+FROM minio/minio:latest
+
+# 创建数据目录
+RUN mkdir -p /data
+
+# 设置环境变量（可根据需要修改账号密码）
+ENV MINIO_ROOT_USER=minioadmin
+ENV MINIO_ROOT_PASSWORD=minioadmin
+
+# 暴露端口
+EXPOSE 9000 9001
+
+# 启动命令，保持和本地一致
+CMD ["server", "/data", "--console-address", ":9001"]

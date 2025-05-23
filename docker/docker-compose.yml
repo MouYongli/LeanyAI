@@ -5,7 +5,80 @@ services:
     build:
       context: ../web
       dockerfile: Dockerfile
-    container_name: nextjs-web
+    container_name: leany-web
     restart: unless-stopped
-    ports:       
-      - "8300:3000"
+    ports:
+      - "${WEB}:3000"
+
+  api:
+    build:
+      context: ../api
+      dockerfile: Dockerfile.fastapi
+    container_name: leany-api
+    restart: unless-stopped
+    ports:
+      - "${FASTAPI_PORT}:8000"
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_API_PORT=${MINIO_API_PORT}
+      - MINIO_CONSOLE_PORT=${MINIO_CONSOLE_PORT}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      - minio
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    ports:
+      - "${MINIO_API_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    env_file:
+      - .env.minio
+
+  # Unit test service for MinIO client
+  minio-test:
+    image: python:3.10-slim
+    container_name: leany-minio-test
+    working_dir: /app
+    volumes:
+      # mount only the MinIO client service directory (includes minio_client.py and testfile.txt)
+      - ../api/minio_service:/app/minio_service:ro
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      - minio
+    # Install the MinIO SDK, cd into service folder, then run the client tests
+    command: bash -c "pip install minio && cd minio_service && python minio_client.py"
+
+  # Integration test service for FastAPI with MinIO
+  fastapi-test:
+    image: python:3.10-slim
+    container_name: leany-fastapi-test
+    working_dir: /app
+    volumes:
+      # mount tests directory only
+      - ../api/tests:/app/tests:ro
+    environment:
+      # Use internal API port for inter-container communication
+      - API_BASE_URL=http://api:8000
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      - minio
+      - api
+    # Install test dependencies and run integration tests
+    command: bash -c "pip install --no-cache-dir -r tests/requirements.txt && pytest tests/test_minio_fastapi.py"
+
+volumes:
+  minio-data:
