@@ -39,7 +39,7 @@ docker/
 | 服务 Service | 容器端口 Container Port | 主机端口 Host Port |
 |--------------|----------------------|-------------------|
 | Web (Next.js)| 3000                 | 8301              |
-| FastAPI      | 8302                 | 8302              |
+| FastAPI      | 8000                 | 8302              |
 | MinIO API    | 9000                 | 9000              |
 | MinIO Console| 9001                 | 9001              |
 
