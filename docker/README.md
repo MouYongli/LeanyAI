@@ -51,11 +51,24 @@ docker/
    ```bash
    cd docker
    ```
-2. 启动并构建：
+2. 使用 Docker Compose 启动前后端：
    ```bash
    docker compose -f docker-compose.yml up -d --build
    ```
-3. 访问 web 服务端口 (默认 http://localhost:3000)
+3. 如果需要使用 Docker Compose 单独重建并运行 FastAPI 服务：
+   ```bash
+   # 切换到 docker 根目录
+   cd docker
+   # 构建并启动 api 服务容器
+   docker compose up -d --build --force-recreate api
+   ```
+4. 访问服务：
+   - Web 服务 (默认 http://localhost:3000)
+   - FastAPI 服务 (默认 http://localhost:8302)
 
 ## 注意事项 / Notes
 - 可根据需求调整端口和挂载路径，请修改 `docker-compose*.yml` 和 `nginx.conf`。
+
+
+docker compose up minio-test
+docker compose up fastapi-test

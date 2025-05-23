@@ -70,14 +70,14 @@ api/
 
 5. 启动 FastAPI 服务
    ```bash
-   uvicorn main:app --reload
+   uvicorn fastapi_app.main:app --reload
    ```
 
 6. 测试
    在 uv 虚拟环境下运行测试脚本：
 
    ```bash
-   uv python test_minio_api.py
+   python test_minio_fastapi.py
    ```
    
 > 需确保本地 MinIO 服务已启动，默认端口9000，账号/密码 minioadmin。
