@@ -27,3 +27,13 @@ This project supports three different deployment methods using Docker Compose:
 
 # yaml vs json
 ![alt text](image-1.png)
+
+
+# 工具介绍 / Tooling
+- Repomix
+   - difyCode.xml 由 Repomix 生成，可用于 AI 代码理解与分析。
+   - Repomix 可将整个代码仓库打包成单个 AI 友好的文件，便于大模型理解。
+   ```
+   difyCode.xml   由 Repomix 生成的 AI 友好代码包
+   ```
+
