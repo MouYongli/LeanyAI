@@ -5,8 +5,8 @@
 This directory contains Docker Compose and Nginx configurations for unified deployment of the decoupled frontend (Next.js) and backend (FastAPI) services.
 
 ## 目录 / Table of Contents
-- [先决条件 / Prerequisites](#先决条件--prerequisites)
 - [目录结构 / Directory Structure](#目录结构--directory-structure)
+- [先决条件 / Prerequisites](#先决条件--prerequisites)
 - [配置说明 / Configuration](#配置说明--configuration)
 - [部署与启动 / Deployment & Startup](#部署与启动--deployment--startup)
   - [有 Nginx / With Nginx](#有-nginx--with-nginx)
