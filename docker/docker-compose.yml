@@ -19,7 +19,7 @@ services:
     ports:
       - "${FASTAPI_PORT}:8000"
     environment:
-      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_API_PORT=${MINIO_API_PORT}
       - MINIO_CONSOLE_PORT=${MINIO_CONSOLE_PORT}
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
@@ -40,8 +40,6 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - minio-data:/data
-    env_file:
-      - .env.minio
 
   # Unit test service for MinIO client
   minio-test:
@@ -52,7 +50,7 @@ services:
       # mount only the MinIO client service directory (includes minio_client.py and testfile.txt)
       - ../api/minio_service:/app/minio_service:ro
     environment:
-      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
       - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
     depends_on:
