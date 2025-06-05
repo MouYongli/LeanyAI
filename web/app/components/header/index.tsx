@@ -1,74 +1,42 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useI18n } from '../i18n-client'
-import LanguageSwitcher from '../language-switcher'
-import Logo from '../logo'
+import Link from 'next/link';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { usePathname } from 'next/navigation';
+import { useI18n } from '../i18n-client';
+import LanguageSwitcher from '../language-switcher';
+import Logo from '../logo';
 
 export default function Header() {
-  const { t } = useI18n()
-  const pathname = usePathname()
-  
+  const { t } = useI18n();
+  const pathname = usePathname();
+
   return (
-    <header className="w-full py-4 px-6 flex justify-between items-center bg-white shadow-sm">
-      <div className="flex items-center">
+    <AppBar position="static" color="inherit" elevation={1}>
+      <Toolbar>
         <Logo />
-        <div className="ml-8 hidden sm:flex space-x-6">
-          <Link 
-            href="/" 
-            className={`text-sm font-medium ${
-              pathname === '/' 
-              ? 'text-blue-600' 
-              : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <span suppressHydrationWarning>{t('home')}</span>
-          </Link>
-          <Link 
-            href="/workflow" 
-            className={`text-sm font-medium ${
-              pathname === '/workflow' 
-              ? 'text-blue-600' 
-              : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <span suppressHydrationWarning>{t('workflow')}</span>
-          </Link>
-          <Link 
-            href="/about" 
-            className={`text-sm font-medium ${
-              pathname === '/about' 
-              ? 'text-blue-600' 
-              : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <span suppressHydrationWarning>{t('about')}</span>
-          </Link>
-          <Link
-            href="/studio"
-            className={`text-sm font-medium ${
-              pathname === '/studio'
-              ? 'text-blue-600'
-              : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <span suppressHydrationWarning>{t('studio')}</span>
-          </Link>
-          <Link
-            href="/knowledge"
-            className={`text-sm font-medium ${
-              pathname === '/knowledge'
-              ? 'text-blue-600'
-              : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <span suppressHydrationWarning>{t('knowledge')}</span>
-          </Link>
-        </div>
-      </div>
-      
-      <LanguageSwitcher />
-    </header>
-  )
+        <Box sx={{ flexGrow: 1, ml: 2, display: { xs: 'none', sm: 'flex' } }}>
+          <Button component={Link} href="/" color={pathname === '/' ? 'primary' : 'inherit'}>
+            {t('home')}
+          </Button>
+          <Button component={Link} href="/workflow" color={pathname === '/workflow' ? 'primary' : 'inherit'}>
+            {t('workflow')}
+          </Button>
+          <Button component={Link} href="/about" color={pathname === '/about' ? 'primary' : 'inherit'}>
+            {t('about')}
+          </Button>
+          <Button component={Link} href="/studio" color={pathname === '/studio' ? 'primary' : 'inherit'}>
+            {t('studio')}
+          </Button>
+          <Button component={Link} href="/knowledge" color={pathname === '/knowledge' ? 'primary' : 'inherit'}>
+            {t('knowledge')}
+          </Button>
+        </Box>
+        <LanguageSwitcher />
+      </Toolbar>
+    </AppBar>
+  );
 }

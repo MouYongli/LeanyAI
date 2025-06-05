@@ -6,6 +6,8 @@ import type { Locale } from "@/i18n/language";
 import i18nConfig from "@/i18n/config";
 import "./globals.css";
 import Header from "./components/header";
+import ThemeProvider from './providers/theme-provider';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,17 +41,19 @@ export default async function RootLayout({
   return (
     <html lang={serverLocale} className="h-full" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}>
-        <I18NServer locale={serverLocale}>
-          <div className="flex flex-col min-h-screen bg-white text-gray-900">
-            <Header />
-            <main className="flex-1 p-6">
-              {children}
-            </main>
-            <footer className="bg-gray-50 py-6 px-6 text-center text-gray-500 text-sm">
-              &copy; {new Date().getFullYear()} LeanyAI. All rights reserved.
-            </footer>
-          </div>
-        </I18NServer>
+        <ThemeProvider>
+          <I18NServer locale={serverLocale}>
+            <div className="flex flex-col min-h-screen bg-white text-gray-900">
+              <Header />
+              <main className="flex-1 p-6">
+                {children}
+              </main>
+              <footer className="bg-gray-50 py-6 px-6 text-center text-gray-500 text-sm">
+                &copy; {new Date().getFullYear()} LeanyAI. All rights reserved.
+              </footer>
+            </div>
+          </I18NServer>
+        </ThemeProvider>
       </body>
     </html>
   );

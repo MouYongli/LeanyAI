@@ -1,12 +1,15 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { Container, Typography, Stack } from '@mui/material';
 import FileList from './FileList';
 import type { KnowledgeFile } from './types';
-
-// 常量 mockData 可移除，使用真实接口分发数据
+import { useKnowledgeApi } from './components/knowledge/useKnowledgeApi';
+import UploadButton from './components/knowledge/UploadButton';
+import DeleteButton from './components/knowledge/DeleteButton';
 
 export default function KnowledgePage() {
   const [files, setFiles] = useState<KnowledgeFile[]>([]);
+  const api = useKnowledgeApi();
 
   const loadFiles = async () => {
     try {
@@ -26,29 +29,15 @@ export default function KnowledgePage() {
   }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Knowledge</h1>
-      <div className="flex space-x-2 mb-4">
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            console.log('Add clicked');
-            loadFiles();
-          }}
-        >
-          Add
-        </button>
-        <button
-          className="btn btn-danger"
-          onClick={() => {
-            console.log('Delete Selected clicked');
-            loadFiles();
-          }}
-        >
-          Delete Selected
-        </button>
-      </div>
+    <Container sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Knowledge
+      </Typography>
+      <Stack direction="row" spacing={2} mb={2}>
+        <UploadButton api={api} onUploaded={loadFiles} />
+        <DeleteButton api={api} selectedIds={[]} onDeleted={loadFiles} />
+      </Stack>
       <FileList files={files} />
-    </div>
+    </Container>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import type { KnowledgeFile } from './types';
+import { List, ListItem, ListItemText } from '@mui/material';
 
 interface FileListProps {
   files: KnowledgeFile[];
@@ -8,13 +9,13 @@ interface FileListProps {
 
 const FileList: React.FC<FileListProps> = ({ files }) => {
   return (
-    <ul className="list-disc pl-5">
+    <List>
       {files.map((file) => (
-        <li key={file.id} className="py-1">
-          {file.name}
-        </li>
+        <ListItem key={file.id} disableGutters>
+          <ListItemText primary={file.name} />
+        </ListItem>
       ))}
-    </ul>
+    </List>
   );
 };
 

@@ -1,4 +1,3 @@
-
 # Knowledge Tab Layout Design
 
 在 `web/app/knowledge` 下新增“Knowledge”标签页，包含“添加”和“删除”按钮，以及一个文件列表视图，从后端数据库中拉取并展示所有知识文件。
@@ -8,38 +7,43 @@
 ## 1. 路径与文件
 
 - `web/app/knowledge/page.tsx`  
-  — 主页面入口，包含“Add”和“Delete Selected”按钮及文件列表  
-- `web/app/knowledge/FileList.tsx`  
-  — 文件列表组件，仅展示文件名  
-- `web/app/knowledge/types.ts` (可选)  
-  — 类型定义，例如 `KnowledgeFile { id: string; name: string }`
+  — 主页面入口，组合布局组件 (layout)，不直接包含业务逻辑
+- `web/app/knowledge/types.ts`  
+  — 类型定义，例如 `KnowledgeFile { id: string; name: string; selected?: boolean }`
+- `web/app/knowledge/components/knowledge/`  
+  — 业务逻辑组件 (logic) 与布局组件 (layout) 分离目录
+  
+  Logic (只包含调用接口、状态管理):  
+  - `UploadButton.tsx`  
+  - `DeleteButton.tsx`  
+  - `useKnowledgeApi.ts` (hooks)  
+
+  Layout (只负责 UI 渲染，不包含 fetch 逻辑):  
+  - `FileList.tsx`  
+  - `FileListItem.tsx`  
 
 ---
 
-## 2. 页面结构
+## 2. API 接口设计 (TypeScript 接口)
+```ts
+// web/app/knowledge/types.ts
+export interface KnowledgeFile {
+  id: string;
+  name: string;
+  selected?: boolean;
+}
 
--```
-┌─────────────────────────────────────────────┐
-│ Header（可选）                              │
-├─────────────────────────────────────────────┤
-│ [Add] button   [Delete Selected] button     │ （暂不触发弹窗，仅布局）
-├─────────────────────────────────────────────┤
-│ ┌───────────┐                              │
-│ │ FileList │                              │
-│ ├───────────┤                              │
-│ │ foo.md    │                              │
-│ │ bar.md    │                              │
-│ └───────────┘                              │
-└─────────────────────────────────────────────┘
+// web/app/knowledge/components/knowledge/useKnowledgeApi.ts
+export interface KnowledgeApi {
+  listFiles(): Promise<KnowledgeFile[]>;
+  uploadFiles(files: File[]): Promise<void>;
+  deleteFiles(ids: string[]): Promise<void>;
+}
 ```
 
-- **Header**：可放置面包屑或页面标题“Knowledge”  
-- **工具栏**：  
-  - “Add” 按钮，点击后弹出 `AddKnowledgeModal`  
-  - “Delete Selected” 按钮，仅在选中至少一个文件时可用，点击后弹出 `DeleteConfirmation`  
-- **文件列表** (`FileList`)  
-  - 带多选框，支持多选删除  
-  - 列：选择框、文件名、创建/更新时间  
+- GET `/files/` 返回 `{ files: string[] }` 用于 `listFiles`
+- POST `/files/upload` 接收 `FormData`，字段 `files`，返回上传结果
+- DELETE `/files/` 接收 JSON `{ ids: string[] }`，返回删除结果
 
 ---
 
@@ -52,24 +56,78 @@
 2. **Buttons**  
    - 在 `page.tsx` 放置 `Add` / `Delete Selected` 按钮，暂不绑定弹窗逻辑  
 
+### Logic 组件 (web/app/knowledge/components/knowledge)
+
+- **useKnowledgeApi.ts**  
+  Hook 封装所有 HTTP 调用，返回上文定义的 `KnowledgeApi` 方法
+
+- **UploadButton.tsx**  
+  Props:
+  ```ts
+  interface UploadButtonProps {
+    api: KnowledgeApi;
+    onUploaded?: () => void;
+  }
+  ```
+  逻辑：打开文件选择、上传、完成后调用 `onUploaded`
+
+- **DeleteButton.tsx**  
+  Props:
+  ```ts
+  interface DeleteButtonProps {
+    api: KnowledgeApi;
+    selectedIds: string[];
+    onDeleted?: () => void;
+  }
+  ```
+  逻辑：确认后调用 `deleteFiles(selectedIds)`，完成后调用 `onDeleted`
+
+### Layout 组件 (web/app/knowledge/components/knowledge)
+
+- **FileList.tsx**  
+  Props:
+  ```ts
+  interface FileListProps {
+    files: KnowledgeFile[];
+    onToggleSelect(id: string): void;
+  }
+  ```
+  渲染列表，遍历调用 `FileListItem`
+
+- **FileListItem.tsx**  
+  Props:
+  ```ts
+  interface FileListItemProps {
+    file: KnowledgeFile;
+    onToggle(): void;
+  }
+  ```
+  渲染复选框 + 文件名
+
 ---
 
-## 4. 数据与交互
+## 4. 页面布局 (`page.tsx`)
 
-- 页面 `page.tsx`  
-  1. `useEffect` mock 拉取知识列表（静态数组），填充 `files` state  
-  2. 本地 state 管理 `files`  
-  3. 点击 `Add` / `Delete Selected` 打印日志或占位函数，刷新时重新加载 mock 列表  
+- 引入并使用 Logic 组件和 Layout 组件：
+  ```tsx
+  const api = useKnowledgeApi();
+  const [files, setFiles] = useState<KnowledgeFile[]>([]);
+  
+  // load, upload, delete 调用 api 后刷新列表
+  // ...existing code...
+  
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Knowledge</h1>
+      <div className="flex space-x-2 mb-4">
+        <UploadButton api={api} onUploaded={loadFiles} />
+        <DeleteButton api={api} selectedIds={files.filter(f=>f.selected).map(f=>f.id)} onDeleted={loadFiles} />
+      </div>
+      <FileList files={files} onToggleSelect={...} />
+    </div>
+  );
+  ```
 
----
 
-## 5. 样式与可访问性
 
-- 使用 Tailwind CSS（项目已有）  
-- 按钮：`btn-primary`/`btn-danger`  
-- Modal 居中、光标聚焦、ESC 关闭  
-- 列表可键盘导航  
-
----
-
-> 下一步：根据此设计创建各组件文件，并在 `page.tsx` 中组合调用。
+uplodad button 需要弹窗，然后用户选择文件后上传。
