@@ -22,8 +22,8 @@ export default function Header() {
           <Button component={Link} href="/" color={pathname === '/' ? 'primary' : 'inherit'}>
             {t('home')}
           </Button>
-          <Button component={Link} href="/workflow" color={pathname === '/workflow' ? 'primary' : 'inherit'}>
-            {t('workflow')}
+          <Button component={Link} href="/agent" color={pathname === '/agent' ? 'primary' : 'inherit'}>
+            {t('agent')}
           </Button>
           <Button component={Link} href="/about" color={pathname === '/about' ? 'primary' : 'inherit'}>
             {t('about')}

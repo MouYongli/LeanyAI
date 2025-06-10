@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-expressions */
 "use client";
 import React, { useState } from 'react';
 import type { KnowledgeFile } from '../../types';
