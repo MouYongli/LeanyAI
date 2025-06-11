@@ -1,0 +1,102 @@
+import os 
+import json
+from dotenv import load_dotenv 
+from evoagentx.models import AzureOpenAIConfig, AzureOpenAILLM
+from evoagentx.workflow import WorkFlowGenerator, WorkFlowGraph, WorkFlow
+from evoagentx.agents import AgentManager
+from evoagentx.actions.code_extraction import CodeExtraction
+from evoagentx.actions.code_verification import CodeVerification 
+from evoagentx.core.module_utils import extract_code_blocks
+
+load_dotenv()
+
+def configure_llm() -> AzureOpenAILLM:
+    """1. LLM 配置"""
+    cfg = AzureOpenAIConfig(
+        model=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"),
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        azure_key=os.getenv("AZURE_OPENAI_KEY"),
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview"),
+        stream=True,
+        output_response=True,
+        max_tokens=16000,
+    )
+    return AzureOpenAILLM(config=cfg), cfg
+
+def generate_workflow(llm: AzureOpenAILLM, goal: str) -> WorkFlowGraph:
+    """2. 生成并展示工作流"""
+    wf = WorkFlowGenerator(llm=llm)
+    # create directory for intermediate results
+    inter_dir = os.path.join("examples", "output", "intermediate")
+    os.makedirs(inter_dir, exist_ok=True)
+    # step 1: plan generation
+    plan = wf.generate_plan(goal=goal)
+    plan_path = os.path.join(inter_dir, "plan.json")
+    with open(plan_path, "w") as f:
+        json.dump(plan.dict(), f, indent=4)
+    print(f"Saved plan to {plan_path}")
+    # step 2: build workflow from plan
+    workflow = wf.build_workflow_from_plan(goal=goal, plan=plan)
+    wf_path = os.path.join(inter_dir, "workflow.json")
+    # serialize workflow without graph (non-serializable MultiDiGraph)
+    data = workflow.to_dict()
+    data.pop('graph', None)
+    with open(wf_path, "w") as f:
+        json.dump(data, f, indent=4)
+    print(f"Saved workflow structure (without graph) to {wf_path}")
+    # step 3: assign agents
+    workflow = wf.generate_agents(goal=goal, workflow=workflow)
+    agents_wf_path = os.path.join(inter_dir, "workflow_with_agents.json")
+    # serialize workflow with agents, excluding graph
+    data_agents = workflow.to_dict()
+    data_agents.pop('graph', None)
+    with open(agents_wf_path, "w") as f:
+        json.dump(data_agents, f, indent=4)
+    print(f"Saved workflow with agents (without graph) to {agents_wf_path}")
+    workflow.display()
+    return workflow
+
+def setup_and_run_agents(graph: WorkFlowGraph, llm: AzureOpenAILLM, cfg: AzureOpenAIConfig) -> str:
+    """3. 注册 Agent 并执行工作流"""
+    mgr = AgentManager()
+    mgr.add_agents_from_workflow(graph, llm_config=cfg)
+    workflow = WorkFlow(graph=graph, agent_manager=mgr, llm=llm)
+    return workflow.execute()
+
+def verify_and_extract(output: str, goal: str, target_dir: str, llm: AzureOpenAILLM):
+    """4. 验证代码并提取到文件"""
+    verifier = CodeVerification()
+    verified = verifier.execute(llm=llm, inputs={"requirements": goal, "code": output}).verified_code
+
+    os.makedirs(target_dir, exist_ok=True)
+    blocks = extract_code_blocks(verified)
+    if len(blocks) == 1:
+        path = os.path.join(target_dir, "index.html")
+        with open(path, "w") as f:
+            f.write(blocks[0])
+        print(f"HTML 文件已生成：{path}")
+        return
+
+    extractor = CodeExtraction()
+    res = extractor.execute(llm=llm, inputs={"code_string": verified, "target_directory": target_dir})
+    print(f"提取 {len(res.extracted_files)} 个文件：")
+    for name, p in res.extracted_files.items():
+        print(f" - {name}: {p}")
+    if res.main_file:
+        ext = os.path.splitext(res.main_file)[1].lower()
+        tip = "可以在浏览器中打开" if ext == ".html" else "主入口文件"
+        print(f"\n主文件：{res.main_file}，{tip}")
+
+def main():
+    goal = "Generate html code for the Tetris game that can be played in the browser."
+    target_dir = "examples/output/tetris_game"
+
+    llm, cfg = configure_llm()
+    graph = generate_workflow(llm, goal)
+
+    # raw_output = setup_and_run_agents(graph, llm, cfg)
+    
+    # verify_and_extract(raw_output, goal, target_dir, llm)
+
+if __name__ == "__main__":
+    main()

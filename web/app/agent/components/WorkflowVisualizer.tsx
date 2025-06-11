@@ -29,50 +29,45 @@ todo:todo
 */
 
 "use client";
+// ...existing imports...
 import React, { useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
-import workflow from '../hooks/workflow.json';
-import type { AgentPlan } from '../types';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function WorkflowVisualizer({ plan }: { plan: AgentPlan | null }) {
+interface Props {
+  /** Mermaid definition DSL string to render */
+  definition: string | null;
+}
+
+/**
+ * Renders a Mermaid flowchart from the provided plan.
+ */
+export default function WorkflowVisualizer({ definition }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
+  // persistent unique ID for mermaid render
+  const chartIdRef = useRef(`mermaid-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
     const container = chartRef.current;
     if (!container) return;
+    // clear previous content
+    container.innerHTML = '';
+    if (!definition) return;
 
-    // Step 1: render all nodes from workflow.json
-    const nodes = (workflow.nodes || []);
-    // Header for left-to-right flow
-    const header = 'flowchart TD';
-    // Map each node to Mermaid syntax
-    const defs = nodes.map(n => {
-      const id = n.name.replace(/[^A-Za-z0-9]/g, '_');
-      const label = n.name;
-      return `${id}["${label}"]`;
-    });
-    // Step 2: include edges
-    const edges = (workflow.edges || []);
-    const edgeDefs = edges.map(e => {
-      const src = e.source.replace(/[^A-Za-z0-9]/g, '_');
-      const tgt = e.target.replace(/[^A-Za-z0-9]/g, '_');
-      return `${src} --> ${tgt}`;
-    });
-    // Combine header, node definitions, and edge definitions
-    const definition = [header, ...defs, ...edgeDefs].join('\n');
+    // debug: log the Mermaid DSL before rendering
+    console.log('Mermaid definition:', definition);
 
-    // Initialize mermaid with auto-render enabled
-    mermaid.initialize({ startOnLoad: true });
-    // Insert the diagram block
-    container.innerHTML = `<div class="mermaid">${definition}</div>`;
-    // Trigger rendering of any Mermaid blocks in the container
-    mermaid.contentLoaded();
-  }, []);
+    // create a mermaid block and set its text safely
+    const graphDiv = document.createElement('div');
+    graphDiv.className = 'mermaid';
+    graphDiv.textContent = definition;
+
+    // append and render only this block
+    container.appendChild(graphDiv);
+    mermaid.initialize({ startOnLoad: false });
+    mermaid.init(undefined, graphDiv);
+  }, [definition]);
 
   return (
-    <div className="w-1/2 p-4 overflow-auto" style={{ minHeight: '100%' }}>
-      <div ref={chartRef} />
-    </div>
+    <div className="w-1/2 p-4 overflow-auto" style={{ minHeight: '100%' }} ref={chartRef} />
   );
 }

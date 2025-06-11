@@ -43,9 +43,7 @@ api/
      ```bash
      pip install uv
      uv venv .venv --python=python3.10
-     source .venv/bin/activate
-     pip install -r requirements.txt
-     uvicorn fastapi_app.main:app --reload
+     source .venv/bin/activate && pip install -r requirements.txt && uvicorn fastapi_app.main:app --reload
      ```
 
 > 完成后请访问 http://localhost:9001 （MinIO 控制台）和 http://localhost:8302 （FastAPI 服务）。
