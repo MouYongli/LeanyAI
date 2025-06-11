@@ -9,10 +9,16 @@ http://127.0.0.1:8000/example/
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from minio.error import S3Error
 from minio_service.minio_client import upload_file, get_file, list_files, delete_file
 from example_service import example_hello_world
-from agent.agent_service import generate_plan
+from agent.agent_service import generate_plan, get_latest_plan
+
+
+# Define request model for message
+class MessageRequest(BaseModel):
+    message: str
 
 
 app = FastAPI()
@@ -70,4 +76,16 @@ def example_service():
 # simple without any parameters
 @app.get("/agent/")
 def agent_service():
-    return generate_plan()
+    return get_latest_plan()
+
+# accept message from frontend and generate plan
+@app.post("/agent/plan")
+def agent_plan_service(request: MessageRequest):
+    """
+    Generate plan based on user message.
+    Expects JSON body: {"message": "user message text"}
+    """
+    if not request.message.strip():
+        raise HTTPException(status_code=400, detail="Message is required")
+    
+    return generate_plan(goal=request.message)

@@ -30,131 +30,206 @@ from dotenv import load_dotenv  # ensure we can load .env variables
 import os
 import json
 from dotenv import load_dotenv
+from evoagentx.models import AzureOpenAIConfig, AzureOpenAILLM
+from evoagentx.workflow import WorkFlowGenerator
 
 # Load environment variables
 load_dotenv()
 
+# Global variable to store the latest generated plan
+_latest_plan = None
 
-def generate_plan() -> dict:
-    # """Generate a workflow graph from a goal using EvoAgentX."""
-    # wf = WorkFlowGenerator(llm=llm)
-    # inter_dir = os.path.join("examples", "output", "intermediate")
-    # os.makedirs(inter_dir, exist_ok=True)
 
-    # # Step 1: generate plan
-    # plan = wf.generate_plan(goal=goal)
-    # return plan
+def generate_plan_demo() -> dict:
+    """Generate a demo plan in TaskPlanningOutput format matching plan.json structure"""
     result = {
-                "class_name": "WorkFlowGraph",
-                "goal": "Generate html code for the Tetris game that can be played in the browser.",
-                "nodes": [
+        "class_name": "TaskPlanningOutput",
+        "sub_tasks": [
+            {
+                "class_name": "WorkFlowNode",
+                "name": "requirements_analysis",
+                "description": "Analyze the user's goal and define the requirements for a browser-based game, including gameplay features, user controls, and expected browser behaviors.",
+                "inputs": [
                     {
-                        "class_name": "WorkFlowNode",
-                        "name": "game_structure_design",
-                        "description": "Create an outline of the Tetris game's structure, including the main game area, score display, and control buttons.",
-                        "inputs": [
-                            {
-                                "class_name": "Parameter",
-                                "name": "goal",
-                                "type": "string",
-                                "description": "The user's goal in textual format.",
-                                "required": True
-                            }
-                        ],
-                        "outputs": [
-                            {
-                                "class_name": "Parameter",
-                                "name": "html_structure",
-                                "type": "string",
-                                "description": "The basic HTML structure outlining the game area, score display, and buttons.",
-                                "required": True
-                            }
-                        ],
-                        "reason": "This sub-task establishes the foundational layout required for a functional Tetris game in HTML.",
-                        "agents": [
-                            {
-                                "name": "tetris_game_structure_agent",
-                                "description": "This agent creates the basic HTML structure for the Tetris game, including the game area, score display, and control buttons based on the user's goal.",
-                                "inputs": [
-                                    {
-                                        "name": "goal",
-                                        "type": "string",
-                                        "description": "The user's goal in textual format.",
-                                        "required": True
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "html_structure",
-                                        "type": "string",
-                                        "description": "The basic HTML structure outlining the game area, score display, and buttons.",
-                                        "required": True
-                                    }
-                                ],
-                                "prompt": "### Objective\nCreate the basic HTML structure for a Tetris game, incorporating the main game area, score display, and control buttons based on the user's goal.\n\n### Instructions\n1. Read the user's goal: <input>{goal}</input>\n2. Design the main game area where the Tetris pieces will fall.\n3. Create an element to display the current score.\n4. Include buttons to control the game (e.g., start, pause, reset).\n5. Assemble these elements into a coherent HTML structure that can be utilized in a web environment.\n6. Output the generated HTML structure.\n\n### Output Format\nYour final output should ALWAYS in the following format:\n\n## Thought\nBriefly explain the reasoning process for creating the HTML structure of the Tetris game.\n\n## html_structure\nThe basic HTML structure outlining the game area, score display, and buttons."
-                            }
-                        ],
-                        "status": "pending"
+                        "class_name": "Parameter",
+                        "name": "goal",
+                        "type": "string",
+                        "description": "The user's goal in textual format.",
+                        "required": True
+                    }
+                ],
+                "outputs": [
+                    {
+                        "class_name": "Parameter",
+                        "name": "game_requirements",
+                        "type": "string",
+                        "description": "A detailed outline of the requirements for a browser-based, playable game.",
+                        "required": True
+                    }
+                ],
+                "reason": "This step ensures clear understanding of all functional and non-functional requirements before code generation, reducing the risk of missing key features or misunderstandings.",
+                "agents": None,
+                "action_graph": None,
+                "status": "pending"
+            },
+            {
+                "class_name": "WorkFlowNode",
+                "name": "game_code_generation",
+                "description": "Generate complete HTML (including JavaScript and CSS as needed) for a playable game in the browser, based on the specified requirements.",
+                "inputs": [
+                    {
+                        "class_name": "Parameter",
+                        "name": "goal",
+                        "type": "string",
+                        "description": "The overall user goal including full context and expectations for the game.",
+                        "required": True
                     },
                     {
-                        "class_name": "WorkFlowNode",
-                        "name": "style_application",
-                        "description": "Add CSS styles to the HTML structure for visual aesthetics and layout to make the game look visually appealing.",
-                        "inputs": [
-                            {
-                                "class_name": "Parameter",
-                                "name": "html_structure",
-                                "type": "string",
-                                "description": "The basic HTML structure of the Tetris game.",
-                                "required": True
-                            }
-                        ],
-                        "outputs": [
-                            {
-                                "class_name": "Parameter",
-                                "name": "styled_game",
-                                "type": "string",
-                                "description": "The styled HTML code that includes CSS for the Tetris game.",
-                                "required": True
-                            }
-                        ],
-                        "reason": "Styling is essential for enhancing the user experience and ensuring the game is visually organized and engaging.",
-                        "agents": [
-                            {
-                                "name": "css_style_application_agent",
-                                "description": "This agent applies CSS styles to the given HTML structure to create a visually appealing layout for the Tetris game.",
-                                "inputs": [
-                                    {
-                                        "name": "html_structure",
-                                        "type": "string",
-                                        "description": "The basic HTML structure of the Tetris game.",
-                                        "required": True
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "styled_game",
-                                        "type": "string",
-                                        "description": "The styled HTML code that includes CSS for the Tetris game.",
-                                        "required": True
-                                    }
-                                ],
-                                "prompt": "### Objective\nEnhance the provided HTML structure by applying CSS styles to create a visually appealing layout for the Tetris game.\n\n### Instructions\n1. Begin with the provided HTML structure: <input>{html_structure}</input>\n2. Analyze the elements in the HTML to decide the appropriate CSS styles that will enhance its appearance.\n3. Write CSS styles that cater to visual aesthetics such as colors, fonts, borders, and spacing.\n4. Integrate the CSS styles into the HTML structure properly.\n5. Ensure the output is a well-formatted HTML document that includes the applied CSS styles.\n\n### Output Format\nYour final output should ALWAYS in the following format:\n\n## Thought\nBriefly explain the reasoning process for achieving the objective.\n\n## styled_game\nThe styled HTML code that includes CSS for the Tetris game."
-                            }
-                        ],
-                        "status": "pending"
+                        "class_name": "Parameter",
+                        "name": "game_requirements",
+                        "type": "string",
+                        "description": "The detailed requirements and features for the game as specified in the previous step.",
+                        "required": True
                     }
                 ],
-                "edges": [
+                "outputs": [
                     {
-                        "class_name": "WorkFlowEdge",
-                        "source": "game_structure_design",
-                        "target": "style_application",
-                        "priority": 0
+                        "class_name": "Parameter",
+                        "name": "game_code",
+                        "type": "string",
+                        "description": "A complete HTML file (including embedded JavaScript and CSS as necessary) for a playable game in the browser.",
+                        "required": True
                     }
                 ],
-                "graph": None
+                "reason": "This step produces the fully functioning game code, ensuring it meets all previously defined requirements and can be played in any web browser.",
+                "agents": None,
+                "action_graph": None,
+                "status": "pending"
             }
-
+        ]
+    }
 
     return result
+
+
+def configure_llm() -> AzureOpenAILLM:
+    """Configure and return Azure OpenAI LLM instance"""
+    cfg = AzureOpenAIConfig(
+        model=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"),
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        azure_key=os.getenv("AZURE_OPENAI_KEY"),
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview"),
+        stream=True,
+        output_response=True,
+        max_tokens=16000,
+    )
+    return AzureOpenAILLM(config=cfg)
+
+
+def convert_plan_to_dict(plan) -> dict:
+    """Convert EvoAgentX plan object to dict format like plan.json"""
+    if hasattr(plan, 'to_dict'):
+        return plan.to_dict()
+    elif hasattr(plan, '__dict__'):
+        plan_dict = plan.__dict__.copy()
+        # Convert any nested objects to dict format
+        for key, value in plan_dict.items():
+            if hasattr(value, '__dict__') and not isinstance(value, (str, int, float, bool, list, dict, type(None))):
+                try:
+                    json.dumps(value)  # Test if serializable
+                except (TypeError, ValueError):
+                    if hasattr(value, 'to_dict'):
+                        plan_dict[key] = value.to_dict()
+                    else:
+                        plan_dict[key] = str(value)
+            elif isinstance(value, list):
+                # Handle list of objects
+                converted_list = []
+                for item in value:
+                    if hasattr(item, 'to_dict'):
+                        converted_list.append(item.to_dict())
+                    elif hasattr(item, '__dict__'):
+                        converted_list.append(item.__dict__)
+                    else:
+                        converted_list.append(item)
+                plan_dict[key] = converted_list
+        return plan_dict
+    else:
+        return {"error": "Unable to convert plan to dict", "plan_str": str(plan)}
+
+
+def generate_plan(goal: str = None) -> dict:
+    """Generate a workflow plan using EvoAgentX and return as dict"""
+    global _latest_plan
+    
+    try:
+        # Use provided goal or default
+        if goal is None:
+            # goal = "Generate html code for the flappy bird that can be played in the browser."
+            goal = "earn 1000000 us dollars in 10 year ."
+        
+        # Configure LLM
+        llm = configure_llm()
+        
+        # Generate plan using EvoAgentX
+        wf = WorkFlowGenerator(llm=llm)
+        plan = wf.generate_plan(goal=goal)
+        
+        # Convert to dict format
+        plan_dict = convert_plan_to_dict(plan)
+        
+        # Store the latest plan
+        _latest_plan = plan_dict
+        
+        return plan_dict
+        
+    except Exception as e:
+        # If EvoAgentX is not available or there's an error, return demo data
+        print(f"Error generating plan with EvoAgentX: {e}")
+        print("Falling back to demo plan...")
+        plan_dict = generate_plan_demo()
+        _latest_plan = plan_dict
+        return plan_dict
+
+
+def get_latest_plan() -> dict:
+    """Get the latest generated plan"""
+    global _latest_plan
+    
+    if _latest_plan is None:
+        # If no plan has been generated yet, return default plan
+        return generate_plan()
+    
+    return _latest_plan
+
+
+def test_generate_plan():
+    """Test function to verify generate_plan works correctly"""
+    print("Testing generate_plan function...")
+    
+    # Test with default goal
+    result = generate_plan()
+    
+    print(f"Plan generated successfully!")
+    print(f"Plan type: {type(result)}")
+    print(f"Plan keys: {result.keys() if isinstance(result, dict) else 'Not a dict'}")
+    
+    # Check if it has the expected structure
+    if isinstance(result, dict):
+        if "class_name" in result:
+            print(f"Class name: {result['class_name']}")
+        if "sub_tasks" in result:
+            print(f"Number of sub_tasks: {len(result['sub_tasks'])}")
+            for i, task in enumerate(result['sub_tasks']):
+                if isinstance(task, dict) and 'name' in task:
+                    print(f"  Task {i+1}: {task['name']}")
+        # Legacy check for old format
+        elif "nodes" in result:
+            print(f"Number of nodes (legacy): {len(result['nodes'])}")
+    
+    return result
+
+
+if __name__ == "__main__":
+    # Test the function when run directly
+    test_generate_plan()

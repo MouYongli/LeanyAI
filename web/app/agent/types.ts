@@ -25,3 +25,29 @@ export interface AgentPlan {
   /** List of plan edges */
   edges: AgentEdge[];
 }
+
+// New types for TaskPlanningOutput format
+export interface Parameter {
+  class_name: string;
+  name: string;
+  type: string;
+  description: string;
+  required: boolean;
+}
+
+export interface SubTask {
+  class_name: string;
+  name: string;
+  description: string;
+  inputs: Parameter[];
+  outputs: Parameter[];
+  reason: string;
+  agents: any;
+  action_graph: any;
+  status: string;
+}
+
+export interface TaskPlanningOutput {
+  class_name: string;
+  sub_tasks: SubTask[];
+}

@@ -36,12 +36,14 @@ import mermaid from 'mermaid';
 interface Props {
   /** Mermaid definition DSL string to render */
   definition: string | null;
+  /** Loading state indicator */
+  isLoading?: boolean;
 }
 
 /**
  * Renders a Mermaid flowchart from the provided plan.
  */
-export default function WorkflowVisualizer({ definition }: Props) {
+export default function WorkflowVisualizer({ definition, isLoading = false }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
   // persistent unique ID for mermaid render
   const chartIdRef = useRef(`mermaid-${Math.random().toString(36).slice(2)}`);
@@ -68,6 +70,12 @@ export default function WorkflowVisualizer({ definition }: Props) {
   }, [definition]);
 
   return (
-    <div className="w-1/2 p-4 overflow-auto" style={{ minHeight: '100%' }} ref={chartRef} />
+    <div className="w-1/2 p-4 overflow-auto" style={{ minHeight: '100%' }} ref={chartRef}>
+      {isLoading && (
+        <div className="flex items-center justify-center h-32">
+          <div className="text-gray-500">Updating workflow...</div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,3 +1,6 @@
+/**
+ * chatpanel get function onSend(message) from parent component.
+ */
 "use client";
 import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import type { AgentMessage } from '../types';
@@ -5,9 +8,10 @@ import type { AgentMessage } from '../types';
 interface ChatPanelProps {
   messages: AgentMessage[];
   onSend: (text: string) => void;
+  isLoading?: boolean;
 }
 
-export default function ChatPanel({ messages, onSend }: ChatPanelProps) {
+export default function ChatPanel({ messages, onSend, isLoading = false }: ChatPanelProps) {
   const [input, setInput] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +25,7 @@ export default function ChatPanel({ messages, onSend }: ChatPanelProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
-      onSend(input.trim());
+      onSend(input.trim()); // 👈 调用父组件传入的 onSend 函数
       setInput('');
     }
   };
@@ -46,12 +50,16 @@ export default function ChatPanel({ messages, onSend }: ChatPanelProps) {
           value={input}
           placeholder="Type a message..."
           onChange={e => setInput(e.target.value)}
+          disabled={isLoading}
         />
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 rounded-r"
+          className={`px-4 rounded-r text-white ${
+            isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+          }`}
+          disabled={isLoading}
         >
-          Send
+          {isLoading ? 'Sending...' : 'Send'}
         </button>
       </form>
     </div>

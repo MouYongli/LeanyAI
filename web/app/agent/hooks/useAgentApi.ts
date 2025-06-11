@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import type { AgentMessage, AgentPlan } from '../types';
+import type { AgentMessage, AgentPlan, TaskPlanningOutput } from '../types';
 // API endpoint for workflow plan
 const API_URL = process.env.NEXT_PUBLIC_AGENT_API_URL ?? 'http://127.0.0.1:8000/agent/';
 
@@ -8,23 +8,83 @@ export function useAgentApi() {
   const [messages, setMessages] = useState<AgentMessage[]>([]);
 
   async function sendMessage(text: string): Promise<AgentMessage[]> {
+    // Add user message immediately
     const newMsg: AgentMessage = { id: Date.now().toString(), from: 'user', text };
-    const botReply: AgentMessage = { id: (Date.now() + 1).toString(), from: 'agent', text: 'Mock response' };
-    const updated = [...messages, newMsg, botReply];
+    const workingMsg: AgentMessage = { 
+      id: (Date.now() + 1).toString(), 
+      from: 'agent', 
+      text: "I'm working on it..." 
+    };
+    
+    const updated = [...messages, newMsg, workingMsg];
     setMessages(updated);
-    return updated;
+
+    try {
+      // Send message to backend API
+      const response = await fetch(`${API_URL}plan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      
+      if (!response.ok) throw new Error('Failed to send message');
+      
+      // Backend processes and updates plan
+      const result = await response.text();
+      
+      // Replace working message with completion
+      const completedMsg: AgentMessage = {
+        id: workingMsg.id,
+        from: 'agent',
+        text: 'Plan updated! Check the workflow diagram.'
+      };
+      
+      const finalMessages = [...messages, newMsg, completedMsg];
+      setMessages(finalMessages);
+      return finalMessages;
+      
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // Handle error case
+      const errorMsg: AgentMessage = {
+        id: workingMsg.id,
+        from: 'agent', 
+        text: 'Sorry, something went wrong. Please try again.'
+      };
+      const errorMessages = [...messages, newMsg, errorMsg];
+      setMessages(errorMessages);
+      return errorMessages;
+    }
   }
 
   async function getPlan(): Promise<AgentPlan> {
     // Fetch full workflow plan from backend API
     const res = await fetch(API_URL);
     console.log('useAgentApi.getPlan response:', res);
-    const data = await res.json();
+    const data: TaskPlanningOutput = await res.json();
     console.log('useAgentApi.getPlan data:', data);
-    // Return only the nodes and edges as AgentPlan
+    
+    // Convert TaskPlanningOutput format to AgentPlan format
+    const nodes = data.sub_tasks?.map(task => ({
+      name: task.name,
+      description: task.description
+    })) ?? [];
+    
+    // Create sequential edges since sub_tasks are in order
+    const edges = [];
+    if (data.sub_tasks && data.sub_tasks.length > 1) {
+      for (let i = 0; i < data.sub_tasks.length - 1; i++) {
+        edges.push({
+          source: data.sub_tasks[i].name,
+          target: data.sub_tasks[i + 1].name
+        });
+      }
+    }
+    
+    // Return in AgentPlan format for compatibility
     return {
-      nodes: data.nodes ?? [],
-      edges: data.edges ?? [],
+      nodes,
+      edges,
     };
   }
 
