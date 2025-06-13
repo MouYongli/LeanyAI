@@ -1,9 +1,20 @@
 """
 This is a FastAPI application that provides endpoints for service.
+http://127.0.0.1:8000/
 
-api/example_service.py
-This application allows users to create a service endpoint.
-http://127.0.0.1:8000/example/
+Minio Service Endpoints:
+| Method | Endpoint             | Description         |
+|--------|----------------------|---------------------|
+| POST   | /upload/             | Upload a file       |
+| DELETE | /delete/{filename}   | Delete a file       |
+| GET    | /download/{filename} | Download a file     |
+| GET    | /files/              | List files          |
+
+Agent Service Endpoints:
+| Method | Endpoint      | Description                        |
+|--------|---------------|------------------------------------|
+| GET    | /agent/       | Get the latest agent plan          |
+| POST   | /agent/plan   | Generate plan based on user message|
 """
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -12,7 +23,6 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from minio.error import S3Error
 from minio_service.minio_client import upload_file, get_file, list_files, delete_file
-from example_service import example_hello_world
 from agent.agent_service import generate_plan, get_latest_plan
 
 
@@ -31,6 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ----------------------------Minio Service Endpoints----------------------------
 @app.post("/upload/")
 async def upload(file: UploadFile = File(...)):
     try:
@@ -65,14 +76,7 @@ def show_files():
     except S3Error as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# create a example using the api.example_service.py template
-@app.get("/example/")
-def example_service():
-    """
-    Example service that returns a simple greeting.
-    """
-    return example_hello_world()
-
+# ----------------------------Agent Service Endpoints----------------------------
 # simple without any parameters
 @app.get("/agent/")
 def agent_service():

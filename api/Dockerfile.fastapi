@@ -8,12 +8,24 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 复制 FastAPI 项目代码
+# 安装 git
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
 # Copy FastAPI project code preserving structure
 COPY fastapi_app/ ./fastapi_app
-# 复制 MinIO 客户端服务代码
-# Copy MinIO client service preserving structure
 COPY minio_service/ ./minio_service
+COPY agent/agent_service.py ./agent/agent_service.py
+
+# 克隆 EvoAgentX 仓库
+RUN git clone https://github.com/EvoAgentX/EvoAgentX.git
+
+COPY agent/azure_openai_model.py ./EvoAgentX/evoagent/models/
+COPY agent/model_configs.py ./EvoAgentX/evoagent/models/
+COPY agent/__init__.py ./EvoAgentX/evoagent/models/
+
+# build install local evoagentx, pip install -e .
+RUN pip install -e ./EvoAgentX
+
 
 # Create __init__.py so Python treats dirs as packages
 RUN touch fastapi_app/__init__.py minio_service/__init__.py

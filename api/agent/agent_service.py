@@ -24,7 +24,6 @@ we are using uv and .venv to manage the virtual environment and run the applicat
 1. install EvoAgentX library.
 2. test the function "generate_workflow"
 
-from dotenv import load_dotenv  # ensure we can load .env variables
 """
 
 import os

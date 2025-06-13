@@ -3,5 +3,4 @@ uvicorn
 minio
 requests
 python-multipart
-git+https://github.com/EvoAgentX/EvoAgentX.git
 python-dotenv
