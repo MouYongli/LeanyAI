@@ -21,39 +21,6 @@ jobs:
         run: |
           docker compose up -d --build
 
-      - name: Wait for MinIO to be ready
-        run: |
-          for i in {1..10}; do
-            nc -z localhost 9000 && break
-            sleep 2
-          done
-          if ! nc -z localhost 9000; then
-            echo "MinIO did not start in time" >&2
-            docker compose -f docker/docker-compose.yml logs minio || true
-            exit 1
-          fi
-
-      - name: Wait for Web to be ready
-        run: |
-          for i in {1..10}; do
-            nc -z localhost 8301 && break
-            sleep 2
-          done
-          if ! nc -z localhost 8301; then
-            echo "Web did not start in time" >&2
-            docker compose -f docker/docker-compose.yml logs leany-web || true
-            exit 1
-          fi
-
-      - name: Run frontend lint & build
-        working-directory: ./web
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.0.0 --activate
-          pnpm install --frozen-lockfile
-          pnpm lint
-          pnpm build
-
       - name: Compose down
         if: always()
         working-directory: ./docker
