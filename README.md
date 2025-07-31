@@ -1,5 +1,4 @@
-![Mainpage](docs/images/image.png)
-![Mainpage](docs/images/workflow.png)
+![Mainpage](assets/images/image.png)
 
 #  
 

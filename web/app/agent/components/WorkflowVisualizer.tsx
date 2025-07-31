@@ -45,8 +45,6 @@ interface Props {
  */
 export default function WorkflowVisualizer({ definition, isLoading = false }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
-  // persistent unique ID for mermaid render
-  const chartIdRef = useRef(`mermaid-${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
     const container = chartRef.current;

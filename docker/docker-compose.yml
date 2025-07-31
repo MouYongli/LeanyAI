@@ -1,14 +1,18 @@
-version: '3.8'
-
 services:
   web:
     build:
       context: ../web
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
     container_name: leany-web
     restart: unless-stopped
     ports:
-      - "${WEB}:3000"
+      - "${WEB_PORT}:3000"
+    env_file:
+      - .env
+    networks:
+      - leany-network
 
   api:
     build:
@@ -18,15 +22,13 @@ services:
     restart: unless-stopped
     ports:
       - "${FASTAPI_PORT}:8000"
-    environment:
-      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
-      - MINIO_API_PORT=${MINIO_API_PORT}
-      - MINIO_CONSOLE_PORT=${MINIO_CONSOLE_PORT}
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    env_file:
+      - .env
     depends_on:
       - minio
-
+    networks:
+      - leany-network
+    
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -34,12 +36,16 @@ services:
     ports:
       - "${MINIO_API_PORT}:9000"
       - "${MINIO_CONSOLE_PORT}:9001"
+    env_file:
+      - .env
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     command: server /data --console-address ":9001"
     volumes:
       - minio-data:/data
+    networks:
+      - leany-network
 
   # Unit test service for MinIO client
   minio-test:
@@ -57,10 +63,12 @@ services:
       - minio
     # Install the MinIO SDK, cd into service folder, then run the client tests
     command: bash -c "pip install minio && cd minio_service && python minio_client.py"
-
+    networks:
+      - leany-network
   # Integration test service for FastAPI with MinIO
+  
   fastapi-test:
-    image: python:3.10-slim
+    image: python:3.11-slim
     container_name: leany-fastapi-test
     working_dir: /app
     volumes:
@@ -68,7 +76,7 @@ services:
       - ../api/tests:/app/tests:ro
     environment:
       # Use internal API port for inter-container communication
-      - API_BASE_URL=http://api:8000
+      - API_BASE_URL=api:8000
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
       - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
@@ -77,6 +85,12 @@ services:
       - api
     # Install test dependencies and run integration tests
     command: bash -c "pip install --no-cache-dir -r tests/requirements.txt && pytest tests/test_minio_fastapi.py"
+    networks:
+      - leany-network
+
+networks:
+  leany-network:
+    driver: bridge  
 
 volumes:
   minio-data:

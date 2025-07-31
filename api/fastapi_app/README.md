@@ -1,11 +1,31 @@
-# FastAPI 应用启动说明
+# LeanyAI FastAPI 应用
 
-## 启动命令
+## 项目结构
 
-在本目录下运行以下命令启动 FastAPI 服务：
+```
+fastapi_app/
+├── main.py              # 主应用入口
+├── routers/             # 路由模块
+│   ├── __init__.py      # 路由包初始化
+│   ├── minio.py         # MinIO 文件存储相关端点
+│   └── agent.py         # Agent 服务相关端点
+└── README.md            # 本文档
+```
+
+## 启动说明
+
+### 开发环境
+
+在 `api/` 目录下运行：
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### 生产环境
+
+```bash
+uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ## 依赖安装
@@ -16,18 +36,53 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 pip install -r requirements.txt
 ```
 
-## 说明
-- `--reload` 适用于开发环境，代码变动会自动重载。
-- 默认监听 8000 端口，如需更改可修改 `--port` 参数。
-  - 默认监听 8000 端口，如需更改可修改 `--port` 参数。
-## API 列表
-以下是当前支持的接口列表：
+## API 文档
 
-| 方法   | 路径                   | 描述                                                         | 参数说明                        | 返回值说明                        |
-| ------ | ---------------------- | ------------------------------------------------------------ | ------------------------------- | --------------------------------- |
-| POST   | `/upload/`             | 上传文件                                                     | 表单字段：`file`                | `{ msg, filename }`               |
-| DELETE | `/delete/{filename}`   | 删除指定文件                                                 | 路径参数：`filename`            | `{ msg, filename }`               |
-| GET    | `/download/{filename}` | 下载指定文件（以 `application/octet-stream` 流形式返回）     | 路径参数：`filename`            | 文件流                            |
-| GET    | `/files/`              | 获取文件列表                                                 | 无                              | `{ files: string[] }`             |
+启动服务后，可以通过以下地址访问：
 
-我目前没有本地运行，我都是用 docker 部署。
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **Root Info**: http://localhost:8000/
+
+## API 端点列表
+
+### 文件存储 (MinIO)
+
+| 方法   | 路径                   | 描述                     | 标签    |
+| ------ | ---------------------- | ------------------------ | ------- |
+| POST   | `/upload/`             | 上传文件到 MinIO 存储     | files   |
+| DELETE | `/delete/{filename}`   | 删除指定文件             | files   |
+| GET    | `/download/{filename}` | 下载指定文件             | files   |
+| GET    | `/files/`              | 获取文件列表             | files   |
+
+### Agent 服务
+
+| 方法   | 路径           | 描述                     | 标签    |
+| ------ | -------------- | ------------------------ | ------- |
+| GET    | `/agent/`      | 获取最新生成的任务计划    | agent   |
+| POST   | `/agent/plan`  | 根据用户消息生成新计划    | agent   |
+
+### 其他服务
+
+| 方法   | 路径         | 描述                     | 标签      |
+| ------ | ------------ | ------------------------ | --------- |
+| GET    | `/`          | API 基本信息             | root      |
+| GET    | `/example/`  | 示例服务                 | example   |
+
+## 模块化设计
+
+### 路由模块
+
+- **`routers/minio.py`**: 包含所有文件存储相关的端点
+- **`routers/agent.py`**: 包含所有 AI 任务规划相关的端点
+
+### 优势
+
+1. **模块化**: 不同功能的端点分离，便于维护
+2. **可扩展**: 易于添加新的功能模块
+3. **清晰的结构**: 代码组织更清晰
+4. **标签分组**: 在 API 文档中按功能分组显示
+
+## 部署说明
+
+推荐使用 Docker 部署，详见项目根目录的 Docker 配置文件。

@@ -12,6 +12,11 @@ COPY package.json .
 COPY pnpm-lock.yaml .
 RUN pnpm install --frozen-lockfile
 COPY . .
+
+# 在构建阶段添加 ARG
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
 

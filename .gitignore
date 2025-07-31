@@ -136,3 +136,4 @@ dist
 .pnp.*
 
 api/agent/.env
+docker/.env

@@ -42,8 +42,8 @@ export interface SubTask {
   inputs: Parameter[];
   outputs: Parameter[];
   reason: string;
-  agents: any;
-  action_graph: any;
+  agents: unknown;
+  action_graph: unknown;
   status: string;
 }
 

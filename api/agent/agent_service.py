@@ -1,5 +1,7 @@
 """
-pip install git+https://github.com/EvoAgentX/EvoAgentX.git
+requirements.txt 不要添加 git+https://github.com/EvoAgentX/EvoAgentX.git
+而是 pip install git+https://github.com/EvoAgentX/EvoAgentX.git
+
 本模块演示如何安装并使用 EvoAgentX 库来生成工作流。
 
 步骤说明:
@@ -17,20 +19,15 @@ pip install git+https://github.com/EvoAgentX/EvoAgentX.git
 
 也就是要写好调用的代码，给 fastapi/main 模块提供一个接口来生成工作流。
 
-In this module, we will demonstrate how to use the EvoAgentX library to generate workflows.
-we will create a demo to use the EvoAgentX library to generate workflows. When it succeeds, then connect it to the FastAPI application.
-
-we are using uv and .venv to manage the virtual environment and run the application.
-1. install EvoAgentX library.
-2. test the function "generate_workflow"
-
-from dotenv import load_dotenv  # ensure we can load .env variables
+source .venv/bin/activate
+uv run agent/agent_service.py 
 """
 
 import os
 import json
 from dotenv import load_dotenv
-from evoagentx.models import AzureOpenAIConfig, AzureOpenAILLM
+import litellm
+from evoagentx.models import LiteLLMConfig, LiteLLM
 from evoagentx.workflow import WorkFlowGenerator
 
 # Load environment variables
@@ -112,18 +109,27 @@ def generate_plan_demo() -> dict:
     return result
 
 
-def configure_llm() -> AzureOpenAILLM:
-    """Configure and return Azure OpenAI LLM instance"""
-    cfg = AzureOpenAIConfig(
-        model=os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"),
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        azure_key=os.getenv("AZURE_OPENAI_KEY"),
-        api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview"),
-        stream=True,
-        output_response=True,
-        max_tokens=16000,
+def configure_llm() -> LiteLLM:
+    """Configure and return LiteLLM instance"""
+    # Check for required environment variables
+    deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+    endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+    api_key = os.getenv("AZURE_OPENAI_KEY")
+    
+    if not deployment_name:
+        raise ValueError("AZURE_OPENAI_DEPLOYMENT_NAME environment variable is required")
+    if not endpoint:
+        raise ValueError("AZURE_OPENAI_ENDPOINT environment variable is required")
+    if not api_key:
+        raise ValueError("AZURE_OPENAI_KEY environment variable is required")
+    
+    config = LiteLLMConfig(
+        model="azure/" + deployment_name,  # Azure model format
+        azure_endpoint=endpoint,
+        azure_key=api_key,
+        api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview")
     )
-    return AzureOpenAILLM(config=cfg)
+    return LiteLLM(config=config)
 
 
 def convert_plan_to_dict(plan) -> dict:
@@ -232,4 +238,5 @@ def test_generate_plan():
 
 if __name__ == "__main__":
     # Test the function when run directly
+    # litellm._turn_on_debug()
     test_generate_plan()

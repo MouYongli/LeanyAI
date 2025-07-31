@@ -1,27 +1,28 @@
 """
 This is a FastAPI application that provides endpoints for service.
 
-api/example_service.py
-This application allows users to create a service endpoint.
+Main application with modular router structure:
+- MinIO file storage endpoints (/upload/, /download/, etc.)
+- Agent service endpoints (/agent/, /agent/plan)
+- Example service endpoint (/example/)
+
 http://127.0.0.1:8000/example/
+http://127.0.0.1:8000/docs - API documentation
 """
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from minio.error import S3Error
-from minio_service.minio_client import upload_file, get_file, list_files, delete_file
 from example_service import example_hello_world
-from agent.agent_service import generate_plan, get_latest_plan
 
+# Import routers
+from .routers import minio, agent
 
-# Define request model for message
-class MessageRequest(BaseModel):
-    message: str
+app = FastAPI(
+    title="LeanyAI API",
+    description="FastAPI application with file storage and AI agent services",
+    version="1.0.0",
+)
 
-
-app = FastAPI()
 # Enable CORS for front-end requests
 app.add_middleware(
     CORSMiddleware,
@@ -31,61 +32,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/upload/")
-async def upload(file: UploadFile = File(...)):
-    try:
-        upload_file(file.file, file.filename, file.content_type)
-        return {"msg": "上传成功", "filename": file.filename}
-    except S3Error as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# Include routers
+app.include_router(minio.router)
+app.include_router(agent.router)
 
 
-# 删除文件接口
-@app.delete("/delete/{filename}")
-def delete(filename: str):
-    try:
-        delete_file(filename)
-        return {"msg": "删除成功", "filename": filename}
-    except S3Error as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@app.get("/", tags=["root"])
+def read_root():
+    """
+    Root endpoint providing basic API information.
+    """
+    return {
+        "message": "Welcome to LeanyAI API",
+        "docs": "/docs",
+        "version": "1.0.0",
+        "services": {
+            "files": "File storage and management",
+            "agent": "AI task planning and generation"
+        }
+    }
 
-@app.get("/download/{filename}")
-def download(filename: str):
-    try:
-        file_obj = get_file(filename)
-        return StreamingResponse(file_obj, media_type="application/octet-stream")
-    except S3Error:
-        raise HTTPException(status_code=404, detail="文件不存在")
 
-@app.get("/files/")
-def show_files():
-    try:
-        files = list_files()
-        return {"files": files}
-    except S3Error as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-# create a example using the api.example_service.py template
-@app.get("/example/")
+@app.get("/example/", tags=["example"])
 def example_service():
     """
     Example service that returns a simple greeting.
     """
     return example_hello_world()
-
-# simple without any parameters
-@app.get("/agent/")
-def agent_service():
-    return get_latest_plan()
-
-# accept message from frontend and generate plan
-@app.post("/agent/plan")
-def agent_plan_service(request: MessageRequest):
-    """
-    Generate plan based on user message.
-    Expects JSON body: {"message": "user message text"}
-    """
-    if not request.message.strip():
-        raise HTTPException(status_code=400, detail="Message is required")
-    
-    return generate_plan(goal=request.message)

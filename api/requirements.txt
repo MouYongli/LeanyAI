@@ -1,7 +1,14 @@
 fastapi
-uvicorn
+uvicorn[standard]
+pydantic
 minio
 requests
 python-multipart
-git+https://github.com/EvoAgentX/EvoAgentX.git
 python-dotenv
+litellm
+PyPDF2
+selenium
+webdriver-manager
+html2text
+fastmcp
+git+https://github.com/EvoAgentX/EvoAgentX.git

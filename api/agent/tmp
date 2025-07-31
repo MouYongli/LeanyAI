@@ -8,6 +8,7 @@ from evoagentx.actions.code_extraction import CodeExtraction
 from evoagentx.actions.code_verification import CodeVerification 
 from evoagentx.core.module_utils import extract_code_blocks
 
+# Load environment variables
 load_dotenv()
 
 def configure_llm() -> AzureOpenAILLM:

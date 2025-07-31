@@ -1,23 +1,15 @@
 # Docker 部署 / Deployment Guide
 
 ## 概述 / Overview
-本目录提供 Docker Compose 配置（含可选 Nginx 反向代理）用于一键部署 LeanyAI 平台：
+本目录提供 Docker Compose 配置用于一键部署 LeanyAI 平台：
 - 前端：Next.js
 - 后端：FastAPI
 
-## 目录结构 / Directory Structure
-```text
-docker/
-├── docker-compose.yml           # 无 Nginx 模式：web + api
-├── docker-compose-nginx.yml     # 有 Nginx 模式：nginx + web + api
-├── nginx.conf                   # Nginx 配置
-└── README.md
-```
 
 ## 端口映射关系 / Port Mapping
 端口映射关系配置在 `.env` 文件中，主要端口如下：
 
-| 服务 Service | 容器端口 Container Port | 主机端口 Host Port |
+| 服务 Service | 容器端口 Container Port | 主机端口 Host Port|
 |--------------|----------------------|-------------------|
 | Web (Next.js)| 3000                 | 8301              |
 | FastAPI      | 8000                 | 8302              |

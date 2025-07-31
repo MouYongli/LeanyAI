@@ -1,10 +1,15 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
 # 安装依赖
+RUN apt-get update && apt-get install -y \
+    git \
+    python3-tk \
+    tk-dev \
+    && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -14,9 +19,22 @@ COPY fastapi_app/ ./fastapi_app
 # 复制 MinIO 客户端服务代码
 # Copy MinIO client service preserving structure
 COPY minio_service/ ./minio_service
+# 复制 Agent 服务代码
+# Copy Agent service preserving structure
+COPY agent/ ./agent
+# 复制示例服务文件
+# Copy example service file
+COPY example_service.py ./
 
 # Create __init__.py so Python treats dirs as packages
-RUN touch fastapi_app/__init__.py minio_service/__init__.py
+RUN touch fastapi_app/__init__.py minio_service/__init__.py agent/__init__.py
+
+# Set default API version if not provided
+ENV AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
+ENV AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME}
+ENV AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+ENV AZURE_OPENAI_KEY=${AZURE_OPENAI_KEY}
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 
 # 暴露端口
 EXPOSE 8000
